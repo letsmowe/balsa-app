@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="fira-sans">
+<meta charset="UTF-8">
+<title>dula chat XD</title>
+<meta name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<script src="dist/js/villa.min.js"></script>
+<link rel="stylesheet" href="dist/css/villa.min.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" type="text/css" href="dist/css/material-colors.css"/>
+<link rel="stylesheet" type="text/css" href="dist/css/villa-cross.min.css"/>
+<script src="dist/js/html5shiv.js"></script>
+<script src="dist/js/html5shiv-printshiv.js"></script>
+<script src="dist/js/classList.min.js"></script>
+<![endif]-->
+
+<style>
+
+	.BalsaApp {
+		-webkit-align-items: center;
+		align-items: center;
+		display: -webkit-box;
+		display: -moz-box;
+		display: -ms-flexbox;
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-flow: column;
+		flex-flow: column;
+		height: 100vh;
+		-webkit-justify-content: center;
+		justify-content: center;
+	}
+
+	.BigInput {
+		border: none;
+		background: none;
+		text-align: center;
+		width: 100%;
+		font-size: 3em;
+		font-weight: 300;
+		font-family: 'Playfair Display', sans-serif;
+	}
+
+	.BigInputBox {
+		-webkit-align-items: center;
+		align-items: center;
+		display: -webkit-box;
+		display: -moz-box;
+		display: -ms-flexbox;
+		display: -webkit-flex;
+		display: flex;
+		-webkit-justify-content: center;
+		justify-content: center;
+		padding: 1em;
+		height: 50vh;
+	}
+
+	@media (min-width: 60em) {
+
+		.BigInput {
+			font-size: 8em;
+		}
+
+	}
+
+</style>
+
+<body>
+
+<main id="main" class="BalsaApp white">
+
+	<div class="BigInputBox orange-700">
+
+		<input type="text" id="bigInputLari" class="BigInput font-white" placeholder=""/>
+
+	</div>
+
+	<div class="BigInputBox blue-700">
+
+		<input type="text" id="bigInputMe" class="BigInput font-white" placeholder=""/>
+
+	</div>
+
+</main>
+
+
+<script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js" id="firebaseScript"></script>
+
+<script>
+
+	var bigInputMe = document.getElementById('bigInputMe');
+	var bigInputLari = document.getElementById('bigInputLari');
+
+	// Firebase 'connection'
+	var rootRef = new Firebase('https://balsa-app-test.firebaseio.com');
+	var text = rootRef.child('text');
+
+	var textMeRef = text.child('textMe');
+	var textLariRef = text.child('textLari');
+
+	var placeholderMe = text.child('placeholderMe');
+	var placeholderLari = text.child('placeholderLari');
+
+	/* Text Ref */
+
+	textMeRef.on('value', function (snap) {
+
+		bigInputMe.value = snap.val();
+
+	});
+
+	textLariRef.on('value', function (snap) {
+
+		bigInputLari.value = snap.val();
+
+	});
+
+	/* Placeholder */
+
+	placeholderMe.on('value', function (snap) {
+
+		bigInputMe.placeholder = snap.val();
+
+	});
+
+	placeholderLari.on('value', function (snap) {
+
+		bigInputLari.placeholder = snap.val();
+
+	});
+
+	bigInputMe.addEventListener('input', function () {
+
+		textMeRef.set(this.value);
+
+	});
+
+	bigInputLari.addEventListener('input', function () {
+
+		textLariRef.set(this.value);
+
+	});
+
+	setInterval(function () {
+
+			placeholderMe.set(bigInputMe.getAttribute('placeholder'));
+			placeholderLari.set(bigInputLari.getAttribute('placeholder'));
+
+	}, 5000);
+
+</script>
+
+</body>
+
+</html>

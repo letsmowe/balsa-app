@@ -149,7 +149,8 @@ gulp.task('serve', function () {
 			routes: {
 				"/home": "./index.html"
 			}
-		}
+		},
+		ghostMode: false
 	});
 
 	gulp.watch([source.css.location + source.css.content], ['css-watch']);
