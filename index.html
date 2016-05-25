@@ -32,188 +32,63 @@
 		text-align: center;
 	}
 
-	.Header {
-		-webkit-align-items: center;
-		align-items: center;
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-		-webkit-justify-content: space-between;
-		justify-content: space-between;
-		width: 100%;
-		height: 6em;
-	}
-
-	.SessionLogout,
-	.BalsaApp.is-online .SessionLogin {
-		display: none;
-	}
-
-	.SessionLogin,
-	.BalsaApp.is-online .SessionLogout {
-		display: block;
-	}
-
 </style>
 
 <body>
 
-<script>
-
-//	window.fbAsyncInit = function() {
-//		FB.init({
-//			appId      : '238627553164073',
-//			xfbml      : true,
-//			version    : 'v2.6'
-//		});
-//	};
-//
-//	(function(d, s, id){
-//		var js, fjs = d.getElementsByTagName(s)[0];
-//		if (d.getElementById(id)) {return;}
-//		js = d.createElement(s); js.id = id;
-//		js.src = "//connect.facebook.net/en_US/sdk.js";
-//		fjs.parentNode.insertBefore(js, fjs);
-//	}(document, 'script', 'facebook-jssdk'));
-
-</script>
-
 <main id="main" class="BalsaApp font-green">
 
-	<header class="Header">
-
-		<img src="" alt="" id="session-img" class="SessionImage"/>
-
-		<div id="session" class="Session"></div>
-
-		<button id="login" class="SessionLogin">login</button>
-		<button id="logout" class="SessionLogout">logout</button>
-
-	</header>
-
-	<span id="lblCount"></span>
-	<input type="number" id="inCount"/>
-
-	<span id="lblName"></span>
-	<input type="text" id="inName"/>
+	<button id="btn">+ create user</button>
 
 </main>
 
 
-<script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js"></script>
 
 <script>
 
-	// Firebase 'connection'
-	var rootRef = new Firebase('https://balsa-app-test.firebaseio.com');
-	var authData = rootRef.getAuth();
+	// Initialize Firebase
+	var config = {
+		apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
+		authDomain: "balsa-app.firebaseapp.com",
+		databaseURL: "https://balsa-app.firebaseio.com",
+		storageBucket: "balsa-app.appspot.com"
+	};
 
-	function startCount() {
+	firebase.initializeApp(config);
 
-		var countRef = rootRef.child('count');
+</script>
 
-		countRef.on('value', function (snap) {
+<script>
 
-			document.getElementById('lblCount').innerHTML = snap.val();
-
-		});
-		
-		document.getElementById('inCount').addEventListener('input', function () {
-
-			var data = parseInt(this.value);
-
-			countRef.set(data);
-
-		});
-
-	}
-
-	function startName() {
-
-		var nameRef = rootRef.child('name');
-
-		nameRef.on('value', function (snap) {
-
-			document.getElementById('lblName').innerHTML = snap.val();
-
-		});
-
-		document.getElementById('inName').addEventListener('input', function () {
-
-			var data = this.value;
-			nameRef.set(data);
-
-		});
-
-	}
-
-	rootRef.onAuth(function (authData) {
-
-		if (authData) {
-
-			console.log("User " + authData.uid + " is logged in with " + authData.provider);
-
-			rootRef.child("users").child(authData.uid).set(authData.facebook);
-			rootRef.child("users").child(authData.uid).child('admin').set(true);
-
-			document.getElementById('session').innerHTML = 'Olá ' + authData.facebook.displayName;
-			document.getElementById('session-img').src = authData.facebook.profileImageURL;
-			document.getElementById('main').classList.add('is-online');
-
-		} else {
-
-			console.log("User is logged out");
-
-			document.getElementById('main').classList.remove('is-online');
-			document.getElementById('session').innerHTML = 'você está offline ';
-
+	root = {
+		users: {
+			test: 'lorem'
 		}
+	};
 
-		document.getElementById('login').addEventListener('click', function () {
+	var database = firebase.database();
+	var ref = database.ref(); // root
 
-			rootRef.authWithOAuthRedirect("facebook", function(error, authData) {
+	var usersRef = database.ref('users');
+	var adminsRef = database.ref('admins');
+	var blacklistRef = database.ref('blacklist');
+	var statesRef = database.ref('states');
+	var countsRef = database.ref('counts');
 
-				if (error) {
+	usersRef.on('value', function (snap) {
 
-					console.log("Login Failed!", error);
-
-				} else {
-
-					console.log("Authenticated successfully with payload:", authData);
-					document.getElementById('main').classList.add('is-online');
-
-				}
-
-			}, {
-				scope: "email,user_likes" // the permissions requested
-			});
-
-		});
-
-		document.getElementById('logout').addEventListener('click', function () {
-
-			rootRef.unauth();
-
-		});
-
-		startCount();
-		startName();
+		console.log(snap.val());
 
 	});
 
-	// find a suitable name based on the meta info given by each provider
-	function getName(authData) {
-		switch(authData.provider) {
-			case 'password':
-				return authData.password.email.replace(/@.*/, '');
-			case 'twitter':
-				return authData.twitter.displayName;
-			case 'facebook':
-				return authData.facebook.displayName;
-		}
-	}
+	var count = 0;
+
+	document.getElementById('btn').addEventListener('click', function() {
+
+		usersRef.set(count++);
+
+	});
 
 </script>
 
