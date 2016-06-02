@@ -69,6 +69,7 @@
 
 </main>
 
+<script src="users.js"></script>
 <script src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js"></script>
 
 <script>
@@ -86,7 +87,7 @@
 
 <script>
 
-	// database management
+	// Database management
 	var database = firebase.database();
 	var ref = database.ref(); // root
 	var usersRef = database.ref('users');
@@ -107,17 +108,6 @@
 //			userPhoto: result.user.photoURL
 //		});
 
-	/**
-	 * push user data to users node
-	 *
-	 * @param user
-	 */
-	function saveUser (user) {
-
-		usersRef.child(user.uid).set(user);
-
-	}
-
 	function toggleSignIn () {
 
 		// check if there is an user signed in or not, if there is not, set a new FacebookAuthProvider (to initiate sign in flow), otherwise, sign out logged user
@@ -133,7 +123,7 @@
 		}
 	}
 
-	function initApp() {
+	function initApp () {
 
 		// verify redirect result, if there is one, get user info; if there is error, get error info
 		firebase.auth().getRedirectResult().then(function(result) {
@@ -160,15 +150,13 @@
 
 		// listen for authStateChanged, if there is one user, set specific info and display info text, otherwise, there is no signed in user, do not display info
 		firebase.auth().onAuthStateChanged(function(authUser) {
-			var user = {};
+
 			// user is signed in, collect info from result and show them somehow
 			if (authUser) {
-				user.uid = authUser.uid;
-				user.displayName = authUser.displayName;
-				user.photoURL = authUser.photoURL;
-				user.providerData = authUser.providerData[0];
-
-				saveUser(user);
+				var user = new User(authUser);
+				console.log(user.getUserInfo());
+				console.log("User info id: " + user.uid);
+				user.save();
 //				firebase.auth().signOut();
 			} else {
 				console.log('signed out');
