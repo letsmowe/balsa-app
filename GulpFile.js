@@ -103,13 +103,13 @@ gulp.task('css-watch', ['css'], function () {
 gulp.task('js', function() {
 	gulp.src(source.js.location + source.js.content)
 		.pipe(concat(_PROJECTNAME + '.js'))
-		.pipe(gulp.dest(dist.js.location))
-		.pipe(uglify({
-			preserveComments: 'some'
-		}))
-		.pipe(rename({
-			extname: '.min.js'
-		}))
+		// .pipe(gulp.dest(dist.js.location))
+		// .pipe(uglify({
+		// 	preserveComments: 'some'
+		// }))
+		// .pipe(rename({
+		// 	extname: '.min.js'
+		// }))
 		.pipe(gulp.dest(dist.js.location));
 });
 

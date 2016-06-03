@@ -14,6 +14,23 @@
 <script src="dist/js/classList.min.js"></script>
 <![endif]-->
 
+<script src="dist/js/balsa-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js"></script>
+
+<script>
+
+	// Initialize Firebase
+	var config = {
+		apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
+		authDomain: "balsa-app.firebaseapp.com",
+		databaseURL: "https://balsa-app.firebaseio.com",
+		storageBucket: "balsa-app.appspot.com"
+	};
+
+	firebase.initializeApp(config);
+
+</script>
+
 <style>
 
 	.BalsaApp {
@@ -69,22 +86,6 @@
 
 </main>
 
-<script src="users.js"></script>
-<script src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js"></script>
-
-<script>
-
-	// Initialize Firebase
-	var config = {
-		apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
-		authDomain: "balsa-app.firebaseapp.com",
-		databaseURL: "https://balsa-app.firebaseio.com",
-		storageBucket: "balsa-app.appspot.com"
-	};
-	firebase.initializeApp(config);
-
-</script>
-
 <script>
 
 	// Database management
@@ -124,18 +125,21 @@
 	}
 
 	function initApp () {
+		var user = new User();
 
 		// verify redirect result, if there is one, get user info; if there is error, get error info
 		firebase.auth().getRedirectResult().then(function(result) {
 
 			if(firebase.auth().currentUser !== null) {
+
 				document.getElementById('refresh').innerHTML = "Sair";
-			} else {
-				document.getElementById('refresh').innerHTML = "Entrar";
+			    user.setUserData(firebase.auth().currentUser);
+
+				// save user only when sign in
+				user.save(usersRef);
+
 			}
 
-			// signed in user info
-			var user = result.user;
 
 		}).catch(function(error) {
 
@@ -153,13 +157,12 @@
 
 			// user is signed in, collect info from result and show them somehow
 			if (authUser) {
-				var user = new User(authUser);
-				console.log(user.getUserInfo());
-				console.log("User info id: " + user.uid);
-				user.save();
-//				firebase.auth().signOut();
+				user.setUserData(authUser);
+				console.log(user.getUserData());
+				user.setSignInStatus(true);
+//				firebase.auth().signOut();  // sign in every page reload
 			} else {
-				console.log('signed out');
+				user.setSignInStatus(false);
 				document.getElementById('refresh').innerHTML = "Entrar";
 			}
 		});
