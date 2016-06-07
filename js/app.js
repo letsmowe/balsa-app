@@ -35,7 +35,13 @@ var BalsaApp = (function () {
 		// define the data references
 		if (this.base) {
 
-			this.usersRef = this.base.database().ref('users');
+			var database = this.base; // firebase.database()
+			this.ref = database.ref(); // root
+			var usersRef = database.ref('users');
+			var adminsRef = database.ref('admin');
+			var blacklistRef = database.ref('blacklist');
+			var statesRef = database.ref('states');
+			var countsRef = database.ref('counts');
 
 		}
 

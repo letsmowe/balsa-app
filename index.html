@@ -14,8 +14,8 @@
 <script src="dist/js/classList.min.js"></script>
 <![endif]-->
 
+<script id="firebase" src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js" onload="isLoaded = true"></script>
 <script src="dist/js/balsa-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js"></script>
 
 <script>
 
@@ -28,6 +28,15 @@
 	};
 
 	firebase.initializeApp(config);
+
+</script>
+
+<script>
+
+	window.onload = function () {
+		var view = document.getElementById('balsa-app');
+		var BalsaApp = new BalsaApp(view, firebase);
+	};
 
 </script>
 
@@ -72,7 +81,7 @@
 
 <body>
 
-<main id="main" class="BalsaApp font-green">
+<main id="balsa-app" class="BalsaApp font-green">
 
 	<header class="Header"></header>
 
@@ -87,27 +96,20 @@
 </main>
 
 <script>
-
-	// Database management
-	var database = firebase.database();
-	var ref = database.ref(); // root
-	var usersRef = database.ref('users');
-//	var adminRef = database.ref('admin');
-//	var blacklistRef = database.ref('blacklist');
-//	var statesRef = database.ref('states');
-//	var countsRef = database.ref('counts');
-
 	// pull data from node
-//	usersRef.on('value', function (snap) {
-//		console.log(snap.val());
-//	});
+		//	usersRef.on('value', function (snap) {
+		//		console.log(snap.val());
+		//	});
 
 	// push data to node
-//		usersRef.push({
-//			facebook_id: result.user.uid,
-//			displayName: result.user.displayName,
-//			userPhoto: result.user.photoURL
-//		});
+		// push() (create new id and push)
+		// set() (update all nodes childs and delete all childs that isnt updated
+		// update() (update only the nodes childs that is informed and keep others)
+			// usersRef.push({
+			// 	 facebook_id: result.user.uid,
+			// 	 displayName: result.user.displayName,
+			// 	 userPhoto: result.user.photoURL
+			// });
 
 	function toggleSignIn () {
 
@@ -119,7 +121,6 @@
 
 		} else {
 
-			console.log("Usuário deslogado");
 			firebase.auth().signOut();
 
 		}
@@ -178,9 +179,7 @@
 
 	}
 
-	window.onload = function () {
-		initApp();
-	};
+
 
 </script>
 
