@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<meta charset="UTF-8">
+<title>State Test</title>
+<meta name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<script src="dist/js/villa.min.js"></script>
+<link rel="stylesheet" href="dist/css/villa.min.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" type="text/css" href="dist/css/material-colors.css"/>
+<link rel="stylesheet" type="text/css" href="dist/css/villa-cross.min.css"/>
+<script src="dist/js/html5shiv.js"></script>
+<script src="dist/js/html5shiv-printshiv.js"></script>
+<script src="dist/js/classList.min.js"></script>
+<![endif]-->
+
+<style>
+
+	/* App */
+
+	.App {
+		-webkit-align-items: center;
+		align-items: center;
+		display: -webkit-box;
+		display: -moz-box;
+		display: -ms-flexbox;
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-flow: column;
+		flex-flow: column;
+		height: 100vh;
+		-webkit-justify-content: center;
+		justify-content: center;
+		-webkit-transition: all .6s;
+		-moz-transition: all .6s;
+		-ms-transition: all .6s;
+		-o-transition: all .6s;
+		transition: all .6s;
+		width: 100%;
+	}
+
+	.is-login .App {
+		background-color: #424242;
+	}
+
+	/* App Button  */
+
+	.AppButton {
+		background: transparent;
+		border: solid 2px #212121;
+		cursor: pointer;
+		padding: 1em;
+		-webkit-transition: all .3s;
+		-moz-transition: all .3s;
+		-ms-transition: all .3s;
+		-o-transition: all .3s;
+		transition: all .3s;
+	}
+
+	.AppButton:hover,
+	.AppButton:active,
+	.AppButton:focus {
+		border-color: #ffffff;
+		color: #ffffff;
+	}
+
+	/* App Alert */
+
+	.AppAlert {
+		font-size: .875em;
+		font-weight: 900;
+		opacity: 0;
+		padding: 1em;
+		text-transform: uppercase;
+		-webkit-transition: opacity .3s;
+		-moz-transition: opacity .3s;
+		-ms-transition: opacity .3s;
+		-o-transition: opacity .3s;
+		transition: opacity .3s;
+	}
+
+	.is-login .AppAlert {
+		opacity: 1;
+	}
+
+	/* List Item */
+
+	.ListItem {
+		padding: 1em;
+		cursor: pointer;
+	}
+
+	.ListItem:hover {
+		color: #bdbdbd;
+	}
+
+	.ListItem.is-active {
+		background-color: red;
+	}
+
+</style>
+
+<body>
+
+<div id="app" class="App grey-300">
+
+	<button id="btn" class="AppButton">Login</button>
+
+	<span class="AppAlert font-green-a700">Parabéns, você está online! enjoy ;)</span>
+	
+	<ul class="List">
+
+		<li class="ListItem">Item 01</li>
+		<li class="ListItem">Item 02</li>
+		<li class="ListItem">Item 03</li>
+		<li class="ListItem">Item 04</li>
+		<li class="ListItem is-active">Item 05</li>
+		
+	</ul>
+
+</div>
+
+<script>
+
+	var app = document.getElementById('app');
+
+	var btn = document.getElementById('btn');
+
+	btn.addEventListener('click', function () {
+
+		document.body.classList.toggle('is-login');
+
+	});
+
+	var list = document.querySelectorAll('.ListItem');
+
+	for (var i = list.length; i--; )
+		list[i].addEventListener('click', function () {
+
+			this.classList.toggle('is-active');
+
+		})
+
+</script>
+
+</body>
+
+</html>
