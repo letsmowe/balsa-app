@@ -14,6 +14,23 @@
 <script src="dist/js/classList.min.js"></script>
 <![endif]-->
 
+<script src="dist/js/balsa-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js"></script>
+
+<script>
+
+	// Initialize Firebase
+	var config = {
+		apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
+		authDomain: "balsa-app.firebaseapp.com",
+		databaseURL: "https://balsa-app.firebaseio.com",
+		storageBucket: "balsa-app.appspot.com"
+	};
+
+	firebase.initializeApp(config);
+
+</script>
+
 <style>
 
 	.BalsaApp {
@@ -59,53 +76,111 @@
 
 	<header class="Header"></header>
 
-	<div class="Counters grey"></div>
+	<div class="Counters grey flex align-center justify-center"></div>
 
-	<footer class="Footer"></footer>
+	<footer class="Footer">
+
+		<button id="refresh"></button>
+
+	</footer>
 
 </main>
 
-
-<script src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js"></script>
-
 <script>
 
-	// Initialize Firebase
-	var config = {
-		apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
-		authDomain: "balsa-app.firebaseapp.com",
-		databaseURL: "https://balsa-app.firebaseio.com",
-		storageBucket: "balsa-app.appspot.com"
-	};
-
-	firebase.initializeApp(config);
-
-</script>
-
-<script>
-
-	root = {
-		users: {
-			test: 'lorem'
-		}
-	};
-
+	// Database management
 	var database = firebase.database();
 	var ref = database.ref(); // root
-
 	var usersRef = database.ref('users');
-	var adminsRef = database.ref('admins');
-	var blacklistRef = database.ref('blacklist');
-	var statesRef = database.ref('states');
-	var countsRef = database.ref('counts');
+//	var adminRef = database.ref('admin');
+//	var blacklistRef = database.ref('blacklist');
+//	var statesRef = database.ref('states');
+//	var countsRef = database.ref('counts');
 
-	usersRef.on('value', function (snap) {
+	// pull data from node
+//	usersRef.on('value', function (snap) {
+//		console.log(snap.val());
+//	});
 
-		console.log(snap.val());
+	// push data to node
+//		usersRef.push({
+//			facebook_id: result.user.uid,
+//			displayName: result.user.displayName,
+//			userPhoto: result.user.photoURL
+//		});
 
-	});
+	function toggleSignIn () {
 
-	var count = 0;
+		// check if there is an user signed in or not, if there is not, set a new FacebookAuthProvider (to initiate sign in flow), otherwise, sign out logged user
+		if(!firebase.auth().currentUser) {
+
+			var provider = new firebase.auth.FacebookAuthProvider();
+			firebase.auth().signInWithRedirect(provider);
+
+		} else {
+
+			console.log("Usuário deslogado");
+			firebase.auth().signOut();
+
+		}
+	}
+
+	function initApp () {
+		var user = new User();
+
+		// verify redirect result, if there is one, get user info; if there is error, get error info
+		firebase.auth().getRedirectResult().then(function(result) {
+
+			if(firebase.auth().currentUser !== null) {
+
+				document.getElementById('refresh').innerHTML = "Sair";
+			    user.setUserData(firebase.auth().currentUser);
+
+				console.log("User logado");
+
+				// save user only when sign in
+				user.save(usersRef);
+
+			}
+
+
+		}).catch(function(error) {
+
+			// handle authentication errors (ex. unable to connect usign email, etc)
+			var errorCode = error.code;
+			var errorMessage = error.message;
+			var email = error.email;
+			var credential = error.credential;
+
+			console.error(error);
+		});
+
+
+		// listen for authStateChanged, if there is one user, set specific info and display info text, otherwise, there is no signed in user, do not display info
+		firebase.auth().onAuthStateChanged(function(authUser) {
+
+			// user is signed in, collect info from result and show them somehow
+			if (authUser) {
+				user.setUserData(authUser);
+				console.log(user.getUserData());
+				user.setSignInStatus(true);
+
+//				firebase.auth().signOut();  // sign in every page reload
+			} else {
+				user.setSignInStatus(false);
+				document.getElementById('refresh').innerHTML = "Entrar";
+			}
+
+		});
+
+		// bind signin function to button that control user auth state
+		document.getElementById('refresh').addEventListener('click', toggleSignIn, false);
+
+	}
+
+	window.onload = function () {
+		initApp();
+	};
 
 </script>
 
