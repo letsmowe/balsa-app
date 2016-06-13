@@ -14,32 +14,6 @@
 <script src="dist/js/classList.min.js"></script>
 <![endif]-->
 
-<script id="firebase" src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js" onload="isLoaded = true"></script>
-<script src="dist/js/balsa-app.js"></script>
-
-<script>
-
-	// Initialize Firebase
-	var config = {
-		apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
-		authDomain: "balsa-app.firebaseapp.com",
-		databaseURL: "https://balsa-app.firebaseio.com",
-		storageBucket: "balsa-app.appspot.com"
-	};
-
-	firebase.initializeApp(config);
-
-</script>
-
-<script>
-
-	window.onload = function () {
-		var view = document.getElementById('balsa-app');
-		var BalsaApp = new BalsaApp(view, firebase);
-	};
-
-</script>
-
 <style>
 
 	.BalsaApp {
@@ -53,8 +27,8 @@
 		-webkit-flex-flow: column;
 		flex-flow: column;
 		height: 100vh;
-		width: 100%;
 		text-align: center;
+		width: 100%;
 	}
 
 	.Header,
@@ -69,119 +43,84 @@
 		height: 100%;
 	}
 
+	.Footer {
+		max-height: 4.5em;
+	}
+
 	.Header {
 		max-height: 3em;
 	}
 
-	.Footer {
-		max-height: 4.5em;
+	.Info {
+		font-size: .875em;
+		font-weight: 900;
+		opacity: 0;
+		padding: 1em;
+		text-transform: uppercase;
+		-webkit-transition: opacity .3s;
+		-moz-transition: opacity .3s;
+		-ms-transition: opacity .3s;
+		-o-transition: opacity .3s;
+		transition: opacity .3s;
+	}
+
+	.is-online {
+		opacity: 1;
 	}
 
 </style>
 
 <body>
 
-<main id="balsa-app" class="BalsaApp font-green">
+<main id="balsa-app" class="BalsaApp">
 
 	<header class="Header"></header>
 
-	<div class="Counters grey flex align-center justify-center"></div>
+	<div class="Counters grey">
+
+		<p class="User-state font-red"></p><br/>
+		<p class="User-uid Info"></p><br/>
+		<p class="User-name Info"></p><br/>
+		<p class="User-photo Info"></p>
+
+	</div>
 
 	<footer class="Footer">
 
-		<button id="refresh"></button>
+		<button id="refresh">ACTION</button>
 
 	</footer>
 
+	<script id="firebase" src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js" onload="isLoaded = true"></script>
+	<script src="dist/js/balsa-app.js"></script>
+
+	<script>
+
+		// Initialize Firebase
+		var config = {
+			apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
+			authDomain: "balsa-app.firebaseapp.com",
+			databaseURL: "https://balsa-app.firebaseio.com",
+			storageBucket: "balsa-app.appspot.com"
+		};
+
+		firebase.initializeApp(config);
+
+	</script>
+
+	<script>
+
+		var view; // view = main balsa-app element
+		var BalsaApp;
+
+		window.onload = function () {
+			view = document.getElementById('balsa-app');
+			BalsaApp = new BalsaApp(view, firebase);
+			BalsaApp.auth.onUserChange();
+		};
+	</script>
+
 </main>
-
-<script>
-	// pull data from node
-		//	usersRef.on('value', function (snap) {
-		//		console.log(snap.val());
-		//	});
-
-	// push data to node
-		// push() (create new id and push)
-		// set() (update all nodes childs and delete all childs that isnt updated
-		// update() (update only the nodes childs that is informed and keep others)
-			// usersRef.push({
-			// 	 facebook_id: result.user.uid,
-			// 	 displayName: result.user.displayName,
-			// 	 userPhoto: result.user.photoURL
-			// });
-
-	function toggleSignIn () {
-
-		// check if there is an user signed in or not, if there is not, set a new FacebookAuthProvider (to initiate sign in flow), otherwise, sign out logged user
-		if(!firebase.auth().currentUser) {
-
-			var provider = new firebase.auth.FacebookAuthProvider();
-			firebase.auth().signInWithRedirect(provider);
-
-		} else {
-
-			firebase.auth().signOut();
-
-		}
-	}
-
-	function initApp () {
-		var user = new User();
-
-		// verify redirect result, if there is one, get user info; if there is error, get error info
-		firebase.auth().getRedirectResult().then(function(result) {
-
-			if(firebase.auth().currentUser !== null) {
-
-				document.getElementById('refresh').innerHTML = "Sair";
-			    user.setUserData(firebase.auth().currentUser);
-
-				console.log("User logado");
-
-				// save user only when sign in
-				user.save(usersRef);
-
-			}
-
-
-		}).catch(function(error) {
-
-			// handle authentication errors (ex. unable to connect usign email, etc)
-			var errorCode = error.code;
-			var errorMessage = error.message;
-			var email = error.email;
-			var credential = error.credential;
-
-			console.error(error);
-		});
-
-
-		// listen for authStateChanged, if there is one user, set specific info and display info text, otherwise, there is no signed in user, do not display info
-		firebase.auth().onAuthStateChanged(function(authUser) {
-
-			// user is signed in, collect info from result and show them somehow
-			if (authUser) {
-				user.setUserData(authUser);
-				console.log(user.getUserData());
-				user.setSignInStatus(true);
-
-//				firebase.auth().signOut();  // sign in every page reload
-			} else {
-				user.setSignInStatus(false);
-				document.getElementById('refresh').innerHTML = "Entrar";
-			}
-
-		});
-
-		// bind signin function to button that control user auth state
-		document.getElementById('refresh').addEventListener('click', toggleSignIn, false);
-
-	}
-
-
-
-</script>
 
 </body>
 

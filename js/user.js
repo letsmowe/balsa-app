@@ -24,7 +24,6 @@ var User = (function () {
 	User.prototype.setSignInStatus = function (status) {
 
 		(status == true) ? this.isSignedIn = true : this.isSignedIn = false;
-		(this.isSignedIn) ? console.log("Usuário online") : console.log("Usuário offline");
 
 	};
 	
@@ -37,7 +36,7 @@ var User = (function () {
 		};
 
 		if (userRef) {
-			usersRef.child(this.uid).update(userData);
+			// usersRef.child(this.uid).update(userData);
 		}
 	};
 
@@ -60,9 +59,7 @@ var User = (function () {
 		this.providerData = this.setProviderData(authUser.providerData);
 		this.isSignedIn = false;
 
-		usersRef.child(this.uid).update({uid: this.uid});
-
-		// console.log(this.teste);
+		// usersRef.child(this.uid).update({uid: this.uid});
 
 	};
 

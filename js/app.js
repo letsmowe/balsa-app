@@ -30,12 +30,11 @@ var BalsaApp = (function () {
 	 */
 	BalsaApp.prototype.init = function () {
 
-		console.log('Welcome');
-
+		var self = this;
 		// define the data references
 		if (this.base) {
 
-			var database = this.base; // firebase.database()
+			var database = this.base.database(); // firebase.database()
 			this.ref = database.ref(); // root
 			var usersRef = database.ref('users');
 			var adminsRef = database.ref('admin');
@@ -45,8 +44,24 @@ var BalsaApp = (function () {
 
 		}
 
-		// the login
-		// ...
+		var btn = this.viewport.querySelectorAll('#refresh')[0];
+		var state = this.viewport.querySelectorAll('.User-state')[0];
+
+		btn.addEventListener('click', function () {
+
+			if (self.base.auth().currentUser == null) {
+
+				state.textContent = "Fazendo login...";
+				setTimeout(self.auth.login, 1000);
+
+			} else {
+
+				state.textContent = "Offline";
+				self.auth.logout();
+
+			}
+
+		});
 
 	};
 
