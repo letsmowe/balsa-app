@@ -27,8 +27,8 @@
 		-webkit-flex-flow: column;
 		flex-flow: column;
 		height: 100vh;
-		width: 100%;
 		text-align: center;
+		width: 100%;
 	}
 
 	.Header,
@@ -43,71 +43,84 @@
 		height: 100%;
 	}
 
+	.Footer {
+		max-height: 4.5em;
+	}
+
 	.Header {
 		max-height: 3em;
 	}
 
-	.Footer {
-		max-height: 4.5em;
+	.Info {
+		font-size: .875em;
+		font-weight: 900;
+		opacity: 0;
+		padding: 1em;
+		text-transform: uppercase;
+		-webkit-transition: opacity .3s;
+		-moz-transition: opacity .3s;
+		-ms-transition: opacity .3s;
+		-o-transition: opacity .3s;
+		transition: opacity .3s;
+	}
+
+	.is-online {
+		opacity: 1;
 	}
 
 </style>
 
 <body>
 
-<main id="main" class="BalsaApp font-green">
+<main id="balsa-app" class="BalsaApp">
 
 	<header class="Header"></header>
 
-	<div class="Counters grey"></div>
+	<div class="Counters grey">
 
-	<footer class="Footer"></footer>
+		<p class="User-state font-red"></p><br/>
+		<p class="User-uid Info"></p><br/>
+		<p class="User-name Info"></p><br/>
+		<p class="User-photo Info"></p>
+
+	</div>
+
+	<footer class="Footer">
+
+		<button id="refresh">ACTION</button>
+
+	</footer>
+
+	<script id="firebase" src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js" onload="isLoaded = true"></script>
+	<script src="dist/js/balsa-app.js"></script>
+
+	<script>
+
+		// Initialize Firebase
+		var config = {
+			apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
+			authDomain: "balsa-app.firebaseapp.com",
+			databaseURL: "https://balsa-app.firebaseio.com",
+			storageBucket: "balsa-app.appspot.com"
+		};
+
+		firebase.initializeApp(config);
+
+	</script>
+
+	<script>
+
+		var view; // view = main balsa-app element
+		var BalsaApp;
+
+		window.onload = function () {
+			view = document.getElementById('balsa-app');
+			BalsaApp = new BalsaApp(view, firebase);
+			BalsaApp.auth.onUserChange();
+		};
+	</script>
 
 </main>
-
-
-<script src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js"></script>
-
-<script>
-
-	// Initialize Firebase
-	var config = {
-		apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
-		authDomain: "balsa-app.firebaseapp.com",
-		databaseURL: "https://balsa-app.firebaseio.com",
-		storageBucket: "balsa-app.appspot.com"
-	};
-
-	firebase.initializeApp(config);
-
-</script>
-
-<script>
-
-	root = {
-		users: {
-			test: 'lorem'
-		}
-	};
-
-	var database = firebase.database();
-	var ref = database.ref(); // root
-
-	var usersRef = database.ref('users');
-	var adminsRef = database.ref('admins');
-	var blacklistRef = database.ref('blacklist');
-	var statesRef = database.ref('states');
-	var countsRef = database.ref('counts');
-
-	usersRef.on('value', function (snap) {
-
-		console.log(snap.val());
-
-	});
-
-	var count = 0;
-
-</script>
 
 </body>
 

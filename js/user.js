@@ -24,22 +24,20 @@ var User = (function () {
 	User.prototype.setSignInStatus = function (status) {
 
 		(status == true) ? this.isSignedIn = true : this.isSignedIn = false;
-		(this.isSignedIn) ? console.log("Usuário online") : console.log("Usuário offline");
 
 	};
 	
 	User.prototype.save = function (userRef) {
 
 		var userData = {
-			uid: this.uid,
 			displayName: this.displayName,
 			photoURL: this.photoURL,
 			providerData: this.providerData
 		};
 
-		if (userRef)
-			usersRef.child(this.uid).set(userData);
-	
+		if (userRef) {
+			// usersRef.child(this.uid).update(userData);
+		}
 	};
 
 	User.prototype.getUserData = function () {
@@ -60,8 +58,8 @@ var User = (function () {
 		this.photoURL = authUser.photoURL;
 		this.providerData = this.setProviderData(authUser.providerData);
 		this.isSignedIn = false;
-		this.isAdmin = false;
-		this.isDouche = false;
+
+		// usersRef.child(this.uid).update({uid: this.uid});
 
 	};
 
