@@ -115,18 +115,26 @@
 		line-height: 1.1;
 	}
 
-	.Auth-required-message {
-		color: #b71c1c;
-		font-size: .75em;
-		font-weight: 900;
-		line-height: 1.1;
+	.AuthMessage--signed-in,
+	.AuthMessage--signed-out {
+		display: none;
 	}
 
-	.AuthMessageState
+	.Balsapp.is-signed-in .AuthMessage--signed-in,
+	.Balsapp.is-signed-out .AuthMessage--signed-out {
+		display: -webkit-box;
+		display: -moz-box;
+		display: -ms-flexbox;
+		display: -webkit-flex;
+		display: flex;
+	}
 
-	.Auth-status-message {
+	.AuthMessage span {
 		font-size: .75em;
-		line-height: 1.1;
+	}
+
+	.AuthMessage-required {
+		font-size: .875em;
 	}
 
 	.AuthAction {
@@ -145,6 +153,7 @@
 	.AuthUser {
 		display: block;
 		height: 100%;
+		padding-right: .75em;
 	}
 
 	/* User */
@@ -171,7 +180,7 @@
 		justify-content: center;
 	}
 
-	.User-photo {
+	.UserPhoto {
 		-webkit-align-items: center;
 		align-items: center;
 		display: -webkit-box;
@@ -184,7 +193,7 @@
 		margin-right: .75em;
 	}
 
-	.User-photo img {
+	.UserPhoto img {
 		border-radius: 50%;
 		background-color: #eeeeee;
 		display: block;
@@ -193,14 +202,18 @@
 	}
 
 	.UserMessage {
+		display: none;
+		-webkit-flex-flow: column;
+		flex-flow: column;
+		line-height: 1.2;
+	}
+
+	.Balsapp.is-signed-in .UserMessage {
 		display: -webkit-box;
 		display: -moz-box;
 		display: -ms-flexbox;
 		display: -webkit-flex;
 		display: flex;
-		-webkit-flex-flow: column;
-		flex-flow: column;
-		line-height: 1.1;
 	}
 
 	.User-display-name {
@@ -283,7 +296,7 @@
 
 <body>
 
-<main id="balsapp" class="Balsapp is-signed-out">
+<main id="balsapp" class="Balsapp is-signed-in">
 
 	<div class="Balsapp-background blue"></div>
 
@@ -309,7 +322,7 @@
 
 					<div class="User">
 
-						<figure class="User-photo">
+						<figure class="UserPhoto">
 
 							<img src="https://scontent.xx.fbcdn.net/v/t1.0-1/p50x50/11796217_999010553463699_9069271950704979152_n.jpg?oh=430918c9053bd976f2e840d4924dec15&oe=57C63FD6" alt=""/>
 							
@@ -323,17 +336,16 @@
 
 							</div>
 
-							<div class="AuthMessageStatus AuthMessageStatus--signed-in">
+							<div class="AuthMessage AuthMessage--signed-in">
 
-								<span class="AuthMessage-required">Faça o login para poder editar</span>
-								<div class="AuthMessage-status">Você está offline</div>
+								<span class="AuthMessage-status font-light-blue">Você está online</span>
 
 							</div>
 
-							<div class="AuthMessageStatus AuthMessageStatus--signed-out">
+							<div class="AuthMessage AuthMessage--signed-out">
 
 								<span class="AuthMessage-required">Faça o login para poder editar</span>
-								<div class="AuthMessage-status">Você está offline</div>
+								<span class="AuthMessage-status font-red">Clique em 'Entrar' para fazer o login</span>
 
 							</div>
 
