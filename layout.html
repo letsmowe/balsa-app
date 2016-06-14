@@ -216,6 +216,14 @@
 		display: flex;
 	}
 
+	.Balsapp.is-signed-in .Button.Button--login {
+		display: none;
+	}
+
+	.Balsapp.is-signed-out .Button.Button--logout {
+		display: none;
+	}
+
 	.User-display-name {
 		font-size: .875em;
 		font-weight: 900;
@@ -356,6 +364,12 @@
 				</div>
 
 				<div class="AuthAction">
+
+					<button class="Button Button--login">
+
+						<span>Entrar</span>
+
+					</button>
 
 					<button class="Button Button--logout">
 
