@@ -15,7 +15,19 @@ var BalsaApp = (function () {
 		this.base = base;
 
 		this.auth = new Auth();
+		this.status = new Status();
 		this.counters = false;
+
+		this.config = {
+			viewportClass: 'Balsapp',
+			backgroundClass: 'Balsapp-background',
+			innerClass: 'Balsapp-inner',
+			stageClass: 'Balsapp-stage'
+		};
+
+		this.background = {};
+		this.inner = {};
+		this.stage = {};
 
 		if (this.viewport && this.base) {
 
@@ -26,11 +38,45 @@ var BalsaApp = (function () {
 	}
 
 	/**
+	 * Normalize the viewport
+	 * Add the background and inner elements
+	 */
+	BalsaApp.prototype.normalize = function () {
+
+		// normalize the viewport class
+		this.viewport.classList.add(this.config.viewportClass);
+
+		// create background element
+		this.background.viewport = document.createElement('div');
+		this.background.viewport.className = this.config.backgroundClass;
+
+		// create inner element
+		this.inner.viewport = document.createElement('div');
+		this.inner.viewport.className = this.config.innerClass;
+
+		// append inner and background elements to viewport
+		this.viewport.appendChild(this.background.viewport);
+		this.viewport.appendChild(this.inner.viewport);
+
+		// create stage element
+		this.stage.viewport = document.createElement('div');
+		this.stage.viewport.className = this.config.stageClass;
+
+		// append stage element to inner
+		this.inner.viewport.appendChild(this.stage.viewport);
+
+	};
+
+	/**
 	 * BalsaApp instance start
 	 */
 	BalsaApp.prototype.init = function () {
 
 		var self = this;
+
+		// normalize viewport
+		this.normalize();
+
 		// define the data references
 		if (this.base) {
 

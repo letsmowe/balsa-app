@@ -141,21 +141,21 @@ gulp.task('tinyPhotosSource', function () {
 
 gulp.task('serve', function () {
 
-	// Serve files from the root of this project
-	// browserSync.init({
-	// 	server: {
-	// 		baseDir: "./",
-	// 		index: "index.html",
-	// 		routes: {
-	// 			"/home": "./index.html"
-	// 		}
-	// 	},
-	// 	ghostMode: false
-	// });
+	 //Serve files from the root of this project
+	 browserSync.init({
+	 	server: {
+	 		baseDir: "./",
+	 		index: "index.html",
+	 		routes: {
+	 			"/home": "./index.html"
+	 		}
+	 	},
+	 	ghostMode: false
+	 });
 
-	gulp.watch([source.css.location + source.css.content], ['css']);
-	gulp.watch([source.js.location + source.js.content], ['js']);
-	// gulp.watch(source.index.content).on("change", browserSync.reload);
+	gulp.watch([source.css.location + source.css.content], ['css-watch']);
+	gulp.watch([source.js.location + source.js.content], ['js-watch']);
+    gulp.watch(source.index.content).on("change", browserSync.reload);
 
 });
 

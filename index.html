@@ -6,6 +6,7 @@
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
 <script src="dist/js/villa.min.js"></script>
 <link rel="stylesheet" href="dist/css/villa.min.css"/>
+<link rel="stylesheet" href="dist/css/balsa-app.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" type="text/css" href="dist/css/material-colors.css"/>
 <link rel="stylesheet" type="text/css" href="dist/css/villa-cross.min.css"/>
@@ -14,113 +15,41 @@
 <script src="dist/js/classList.min.js"></script>
 <![endif]-->
 
-<style>
-
-	.BalsaApp {
-		-webkit-align-items: center;
-		align-items: center;
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-		-webkit-flex-flow: column;
-		flex-flow: column;
-		height: 100vh;
-		text-align: center;
-		width: 100%;
-	}
-
-	.Header,
-	.Counters,
-	.Footer {
-		flex: 1 1 auto;
-		width: 100%;
-	}
-
-	.Header,
-	.Footer {
-		height: 100%;
-	}
-
-	.Footer {
-		max-height: 4.5em;
-	}
-
-	.Header {
-		max-height: 3em;
-	}
-
-	.Info {
-		font-size: .875em;
-		font-weight: 900;
-		opacity: 0;
-		padding: 1em;
-		text-transform: uppercase;
-		-webkit-transition: opacity .3s;
-		-moz-transition: opacity .3s;
-		-ms-transition: opacity .3s;
-		-o-transition: opacity .3s;
-		transition: opacity .3s;
-	}
-
-	.is-online {
-		opacity: 1;
-	}
-
-</style>
-
 <body>
 
-<main id="balsa-app" class="BalsaApp">
-
-	<header class="Header"></header>
-
-	<div class="Counters grey">
-
-		<p class="User-state font-red"></p><br/>
-		<p class="User-uid Info"></p><br/>
-		<p class="User-name Info"></p><br/>
-		<p class="User-photo Info"></p>
-
-	</div>
-
-	<footer class="Footer">
-
-		<button id="refresh">ACTION</button>
-
-	</footer>
-
-	<script id="firebase" src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js" onload="isLoaded = true"></script>
-	<script src="dist/js/balsa-app.js"></script>
-
-	<script>
-
-		// Initialize Firebase
-		var config = {
-			apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
-			authDomain: "balsa-app.firebaseapp.com",
-			databaseURL: "https://balsa-app.firebaseio.com",
-			storageBucket: "balsa-app.appspot.com"
-		};
-
-		firebase.initializeApp(config);
-
-	</script>
-
-	<script>
-
-		var view; // view = main balsa-app element
-		var BalsaApp;
-
-		window.onload = function () {
-			view = document.getElementById('balsa-app');
-			BalsaApp = new BalsaApp(view, firebase);
-			BalsaApp.auth.onUserChange();
-		};
-	</script>
+<main id="balsapp" class="BalsaApp">
 
 </main>
+
+<script id="firebase" src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js" onload="isLoaded = true"></script>
+<script src="dist/js/balsa-app.js"></script>
+
+<script>
+
+	// Initialize Firebase
+	var config = {
+		apiKey: "AIzaSyCdPHyUfnfh9afBSv978w_Z7i96S03msos",
+		authDomain: "balsa-app.firebaseapp.com",
+		databaseURL: "https://balsa-app.firebaseio.com",
+		storageBucket: "balsa-app.appspot.com"
+	};
+
+	firebase.initializeApp(config);
+
+</script>
+
+<script>
+
+	var view; // view = main balsa-app element
+	var BalsaApp;
+
+	window.onload = function () {
+		view = document.getElementById('balsapp');
+		BalsaApp = new BalsaApp(view, firebase);
+		BalsaApp.auth.onUserChange();
+	};
+
+</script>
 
 </body>
 
