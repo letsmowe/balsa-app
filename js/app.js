@@ -44,21 +44,26 @@ var BalsaApp = (function () {
 
 		}
 
-		var btn = this.viewport.querySelectorAll('#refresh')[0];
-		var state = this.viewport.querySelectorAll('.User-state')[0];
+		var login = this.viewport.querySelectorAll('.Button--login')[0];
+		var logout = this.viewport.querySelectorAll('.Button--logout')[0];
+		var status = this.viewport.querySelectorAll('.AuthMessage-status')[1];
 
-		btn.addEventListener('click', function () {
+		login.addEventListener('click', function () {
 
 			if (self.base.auth().currentUser == null) {
 
-				state.textContent = "Fazendo login...";
-				setTimeout(self.auth.login, 1000);
+				// status.innerText = "Fazendo login...";
+				// setTimeout(self.auth.login(), 1000);
+				self.auth.login();
 
-			} else {
+			}
 
-				state.textContent = "Offline";
+		});
+
+		logout.addEventListener('click', function () {
+
+			if (self.base.auth().currentUser !== null) {
 				self.auth.logout();
-
 			}
 
 		});
