@@ -85,34 +85,42 @@ var BalsaApp = (function () {
 			var usersRef = database.ref('users');
 			var adminsRef = database.ref('admin');
 			var blacklistRef = database.ref('blacklist');
-			var statesRef = database.ref('states');
+			var statusRef = database.ref('status');
 			var countsRef = database.ref('counts');
 
 		}
 
-		var login = this.viewport.querySelectorAll('.Button--login')[0];
-		var logout = this.viewport.querySelectorAll('.Button--logout')[0];
-		var status = this.viewport.querySelectorAll('.AuthMessage-status')[1];
+		// Testes de inserção: status e queue
+		self.status.setStatus('Teste', 'Alo', '5KtUe8ua8IfjphY7cTZYrKtxEqY2'); //user === currentUser
+		self.status.save(statusRef);
 
-		login.addEventListener('click', function () {
+		// não foram criados ainda, comentados para evitar conflito mas manter o código
 
-			if (self.base.auth().currentUser == null) {
+		// var login = this.viewport.querySelectorAll('.Button--login')[0];
+		// var logout = this.viewport.querySelectorAll('.Button--logout')[0];
+		// var status = this.viewport.querySelectorAll('.AuthMessage-status')[1];
+		//
+		// login.addEventListener('click', function () {
+		//
+		// 	if (self.base.auth().currentUser == null) {
 
 				// status.innerText = "Fazendo login...";
 				// setTimeout(self.auth.login(), 1000);
-				self.auth.login();
+				// self.auth.login();
+			//
+			// }
 
-			}
+		// });
 
-		});
-
-		logout.addEventListener('click', function () {
-
-			if (self.base.auth().currentUser !== null) {
-				self.auth.logout();
-			}
-
-		});
+		// logout.addEventListener('click', function () {
+		//
+		// 	if (self.base.auth().currentUser !== null) {
+		//
+		// 		self.auth.logout();
+		//
+		// 	}
+		//
+		// });
 
 	};
 
