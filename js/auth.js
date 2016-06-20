@@ -6,11 +6,36 @@ var Auth = (function () {
 	/**
 	 * Balsa App Auth constructor
 	 * @constructor
+	 * @param {Element} parent parent element viewport (auth parent element = Balsapp-inner)
 	 */
-	function Auth() {
+	function Auth(parent) {
 
 		var self = this;
-		this.user = new User();
+
+		this.config = {
+			authClass: 'Auth',
+			backgroundClass: 'Auth-background',
+			innerClass: 'Auth-inner',
+			userClass: 'AuthUser',
+			actionClass: 'AuthAction',
+			messageInClass: 'AuthMessage AuthMessage--signed-in',
+			messageOutClass: 'AuthMessage AuthMessage--signed-in'
+		};
+
+		this.viewport = parent; // its parent element
+		this.auth = {};
+		this.background = {};
+		this.inner = {};
+		this.userView = {};
+		this.action = {};
+		this.buttonLogin = {};
+		this.buttonLogout = {};
+
+		if (this.viewport) {
+
+			this.init();
+
+		}
 
 		// implying firebase config is already set up
 		this.login = function () {
@@ -23,7 +48,7 @@ var Auth = (function () {
 				firebase.auth().getRedirectResult().then(function (result) {
 
 					if (firebase.auth().currentUser == null) {
-						// go to facebook authentication page, therefore, set online true
+						// go to facebook authentication page and set online true
 						localStorage.setItem('online', true);
 					}
 
@@ -40,13 +65,8 @@ var Auth = (function () {
 
 			// set up interface to signed out user
 			firebase.auth().signOut();
-			localStorage.removeItem('online');
-
+			self.removeLocalStorage();
 			self.setLoggedOutInfo();
-
-			var info = document.querySelectorAll('.Info');
-			for (var i = info.length; i--;)
-				(info[i].classList.contains('is-online')) ? info[i].classList.remove('is-online') : null;
 
 		};
 
@@ -55,13 +75,13 @@ var Auth = (function () {
 
 			firebase.auth().onAuthStateChanged(function(authUser) {
 
-				// user is signed in, collect info from result and show them somehow
 				if (authUser) {
 					console.log('authUser true @ onAuthStateChange');
 
 					self.user.setUserData(authUser);
 					self.user.setSignInStatus(true);
 					self.setLocalStorage();
+					self.user.save();
 
 					if (self.user.getUserData().uid == self.getLocalStorage().user.uid) {
 						self.setLoggedInInfo();
@@ -82,14 +102,63 @@ var Auth = (function () {
 				}
 			});
 
-			if (localStorage.getItem('online')) {
-				document.getElementsByClassName('User-state')[0].textContent = 'Online';
-				self.displayInfo();
-			}
+			// if (localStorage.getItem('online')) {
+			// 	self.displayInfo();
+			// }
 
 		};
 
 	}
+
+	Auth.prototype.init = function () {
+
+		this.normalize();
+		this.user = new User(this.userView.viewport);
+
+	};
+
+	Auth.prototype.normalize = function () {
+
+		// create auth element
+		this.auth.viewport = document.createElement('div');
+		this.auth.viewport.className = this.config.authClass;
+
+		this.viewport.appendChild(this.auth.viewport);
+
+		// create auth background element
+		this.background.viewport = document.createElement('div');
+		this.background.viewport.className = this.config.backgroundClass;
+
+		// create auth inner element
+		this.inner.viewport = document.createElement('div');
+		this.inner.viewport.className = this.config.innerClass;
+
+		this.auth.viewport.appendChild(this.background.viewport);
+		this.auth.viewport.appendChild(this.inner.viewport);
+
+		// create auth user (as userView to mantain user (User object)) element
+		this.userView.viewport = document.createElement('div');
+		this.userView.viewport.className = this.config.userClass;
+
+		// create auth action element
+		this.action.viewport = document.createElement('div');
+		this.action.viewport.className = this.config.actionClass;
+
+		this.inner.viewport.appendChild(this.userView.viewport);
+		this.inner.viewport.appendChild(this.action.viewport);
+
+		this.buttonLogin = document.createElement('button');
+		this.buttonLogin.className = 'Button Button--login';
+		this.buttonLogin.innerHTML = '<span>Entrar</span>';
+
+		this.buttonLogout = document.createElement('button');
+		this.buttonLogout.className = 'Button Button--logout';
+		this.buttonLogout.innerHTML = '<span>Sair</span>';
+
+		this.action.viewport.appendChild(this.buttonLogin);
+		this.action.viewport.appendChild(this.buttonLogout);
+
+	};
 
 	// WARNING: wont work, user is created using setUserData and retrive data using getUserData
 	Auth.prototype.getUser = function () {
@@ -100,9 +169,14 @@ var Auth = (function () {
 
 	Auth.prototype.displayInfo = function () {
 
-		var infoFields = document.querySelectorAll('.Info');
-		for (var i = 0; i < infoFields.length; i++)
-			infoFields[i].classList.toggle('is-online');
+		var balsaStatus = document.getElementById('balsapp').classList;
+
+		if (balsaStatus.contains('is-signed-out')) {
+
+			balsaStatus.remove('is-signed-out');
+			balsaStatus.add('is-signed-in');
+
+		}
 
 	};
 
@@ -110,6 +184,13 @@ var Auth = (function () {
 
 		var str = JSON.stringify(this);
 		localStorage.setItem('auth', str);
+
+	};
+
+	Auth.prototype.removeLocalStorage = function () {
+
+		localStorage.removeItem('auth');
+		localStorage.removeItem('online');
 
 	};
 
@@ -124,13 +205,10 @@ var Auth = (function () {
 
 	Auth.prototype.getInfoFields = function () {
 
-		var uid = document.getElementsByClassName('User-uid')[0];
-		var name = document.getElementsByClassName('User-name')[0];
-		var photo = document.getElementsByClassName('User-photo')[0];
-
-		var fields = {0: uid, 1: name, 2: photo};
+		var name = document.getElementsByClassName('User-display-name')[0];
+		var photo = document.getElementsByClassName('UserPhoto')[0];
 		
-		return fields;
+		return {0: name, 1: photo};
 
 	};
 
@@ -143,9 +221,12 @@ var Auth = (function () {
 
 			storedData = this.getLocalStorage();
 
-			info[0].textContent = storedData.user.uid;
-			info[1].textContent = storedData.user.displayName;
-			info[2].textContent = storedData.user.photoURL;
+			info[0].textContent = storedData.user.displayName;
+			var img = document.createElement('img');
+			img.alt = storedData.user.displayName;
+			img.src = storedData.user.photoURL;
+			info[1].innerHTML = "";
+			info[1].appendChild(img);
 
 		}
 
@@ -154,9 +235,12 @@ var Auth = (function () {
 	Auth.prototype.setLoggedOutInfo = function () {
 
 		var fields = this.getInfoFields();
+		fields[0].innerHTML = "";
+		fields[1].innerHTML = "";
 
-		for (var k = 0; k < fields.length; k++)
-			fields[k].textContent = "";
+		var balsaStatus = document.getElementById('balsapp').classList;
+		balsaStatus.remove('is-signed-in');
+		balsaStatus.add('is-signed-out');
 
 	};
 

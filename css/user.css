@@ -1,0 +1,65 @@
+
+/* User */
+
+.User {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	height: 100%;
+	width: 100%;
+}
+
+.User-info {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-flow: column;
+	flex-flow: column;
+	-webkit-justify-content: center;
+	justify-content: center;
+}
+
+.UserPhoto {
+	-webkit-align-items: center;
+	align-items: center;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-justify-content: center;
+	justify-content: center;
+	margin-right: .75em;
+}
+
+.UserPhoto img {
+	border-radius: 50%;
+	background-color: #eeeeee;
+	display: block;
+	height: 3em;
+	width: 3em;
+}
+
+.UserMessage {
+	display: none;
+	-webkit-flex-flow: column;
+	flex-flow: column;
+	line-height: 1.2;
+}
+
+.Balsapp.is-signed-in .UserMessage {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+}
+
+.User-display-name {
+	font-size: .875em;
+	font-weight: 900;
+}

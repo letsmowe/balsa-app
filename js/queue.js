@@ -18,31 +18,38 @@ var Queue = (function () {
 
 	}
 
+	/**
+	 * Queue firebase save function
+	 * @param queueRef firebase ref
+	 */
 	Queue.prototype.save = function (queueRef) {
 
-		if (queueRef) {
-			queueRef.update({
+		if (queueRef && this.direction) {
+
+			queueRef.push({
 				count: this.count,
 				direction: this.direction,
+				isValid: this.isValid,
 				timestamp: this.timestamp,
 				user: this.user
 			});
+
 		}
 
 	};
 
+	/**
+	 * Set data queue object
+	 * @param {int} count number of vehicles on the queue
+	 * @param {object} direction object with key equals 'from' and value equals 'to' (BAND:ITCA or ITCA:BAND)
+	 * @param {string} user who inserted count value
+	 */
 	Queue.prototype.setQueue = function (count, direction, user) {
 
 		this.count = count;
 		this.direction = direction;
-		this.timestamp = new Date().toString();
+		this.timestamp = Date.now(); //timestamp = new Date().toString()
 		this.user = user;
-
-	};
-
-	Queue.prototype.getQueue = function () {
-
-		return this;
 
 	};
 

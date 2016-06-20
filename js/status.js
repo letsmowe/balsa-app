@@ -35,7 +35,7 @@ var Status = (function () {
 		this.title = title;
 		this.message = message;
 		this.user = user;
-		this.timestamp = new Date().toString();
+		this.timestamp = Date.now();
 		// this.className = ''; ?
 
 	};

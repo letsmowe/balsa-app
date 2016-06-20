@@ -14,10 +14,6 @@ var BalsaApp = (function () {
 		this.viewport = viewport;
 		this.base = base;
 
-		this.auth = new Auth();
-		this.status = new Status();
-		this.counters = false;
-
 		this.config = {
 			viewportClass: 'Balsapp',
 			backgroundClass: 'Balsapp-background',
@@ -45,6 +41,7 @@ var BalsaApp = (function () {
 
 		// normalize the viewport class
 		this.viewport.classList.add(this.config.viewportClass);
+		this.viewport.classList.add('is-signed-out');
 
 		// create background element
 		this.background.viewport = document.createElement('div');
@@ -77,11 +74,13 @@ var BalsaApp = (function () {
 		// normalize viewport
 		this.normalize();
 
+		this.auth = new Auth(this.inner.viewport);
+		this.current = new Current(this.stage.viewport);
+
 		// define the data references
 		if (this.base) {
 
 			var database = this.base.database(); // firebase.database()
-			this.ref = database.ref(); // root
 			var usersRef = database.ref('users');
 			var adminsRef = database.ref('admin');
 			var blacklistRef = database.ref('blacklist');
@@ -90,37 +89,31 @@ var BalsaApp = (function () {
 
 		}
 
-		// Testes de inserção: status e queue
-		self.status.setStatus('Teste', 'Alo', '5KtUe8ua8IfjphY7cTZYrKtxEqY2'); //user === currentUser
-		self.status.save(statusRef);
+		var login = this.auth.buttonLogin;
+		var logout = this.auth.buttonLogout;
+		var status = this.auth.user.authMessageStatus.viewport;
 
-		// não foram criados ainda, comentados para evitar conflito mas manter o código
+		login.addEventListener('click', function () {
 
-		// var login = this.viewport.querySelectorAll('.Button--login')[0];
-		// var logout = this.viewport.querySelectorAll('.Button--logout')[0];
-		// var status = this.viewport.querySelectorAll('.AuthMessage-status')[1];
-		//
-		// login.addEventListener('click', function () {
-		//
-		// 	if (self.base.auth().currentUser == null) {
+			if (self.base.auth().currentUser == null) {
 
-				// status.innerText = "Fazendo login...";
-				// setTimeout(self.auth.login(), 1000);
-				// self.auth.login();
-			//
-			// }
+				status.innerText = "Fazendo login...";
+				setTimeout(self.auth.login(), 1000);
+				self.auth.login();
 
-		// });
+			}
 
-		// logout.addEventListener('click', function () {
-		//
-		// 	if (self.base.auth().currentUser !== null) {
-		//
-		// 		self.auth.logout();
-		//
-		// 	}
-		//
-		// });
+		});
+
+		logout.addEventListener('click', function () {
+
+			if (self.base.auth().currentUser !== null) {
+
+				self.auth.logout();
+
+			}
+
+		});
 
 	};
 

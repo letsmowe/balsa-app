@@ -1,0 +1,85 @@
+
+/* Auth */
+
+.Auth {
+	color: #424242;
+	flex: 1;
+	height: 100%;
+	max-height: 4.5em;
+	position: relative;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.Auth-background {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
+.Auth-inner {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	height: 100%;
+	-webkit-justify-content: space-between;
+	justify-content: space-between;
+	padding: 0 1em;
+	position: relative;
+}
+
+.AuthMessage {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-flow: column;
+	flex-flow: column;
+	line-height: 1.1;
+}
+
+.AuthMessage--signed-in,
+.AuthMessage--signed-out {
+	display: none;
+}
+
+.Balsapp.is-signed-in .AuthMessage--signed-in,
+.Balsapp.is-signed-out .AuthMessage--signed-out {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+}
+
+.AuthMessage span {
+	font-size: .75em;
+}
+
+.AuthMessage-required {
+	font-size: .875em;
+}
+
+.AuthAction {
+	-webkit-align-items: center;
+	align-items: center;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-justify-content: center;
+	justify-content: center;
+	height: 100%;
+}
+
+.AuthUser {
+	display: block;
+	height: 100%;
+	padding-right: .75em;
+}
