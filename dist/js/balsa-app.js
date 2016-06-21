@@ -20,7 +20,19 @@ var BalsaApp = (function () {
 		this.base = base;
 
 		this.auth = new Auth();
+		this.status = new Status();
 		this.counters = false;
+
+		this.config = {
+			viewportClass: 'Balsapp',
+			backgroundClass: 'Balsapp-background',
+			innerClass: 'Balsapp-inner',
+			stageClass: 'Balsapp-stage'
+		};
+
+		this.background = {};
+		this.inner = {};
+		this.stage = {};
 
 		if (this.viewport && this.base) {
 
@@ -31,11 +43,45 @@ var BalsaApp = (function () {
 	}
 
 	/**
+	 * Normalize the viewport
+	 * Add the background and inner elements
+	 */
+	BalsaApp.prototype.normalize = function () {
+
+		// normalize the viewport class
+		this.viewport.classList.add(this.config.viewportClass);
+
+		// create background element
+		this.background.viewport = document.createElement('div');
+		this.background.viewport.className = this.config.backgroundClass;
+
+		// create inner element
+		this.inner.viewport = document.createElement('div');
+		this.inner.viewport.className = this.config.innerClass;
+
+		// append inner and background elements to viewport
+		this.viewport.appendChild(this.background.viewport);
+		this.viewport.appendChild(this.inner.viewport);
+
+		// create stage element
+		this.stage.viewport = document.createElement('div');
+		this.stage.viewport.className = this.config.stageClass;
+
+		// append stage element to inner
+		this.inner.viewport.appendChild(this.stage.viewport);
+
+	};
+
+	/**
 	 * BalsaApp instance start
 	 */
 	BalsaApp.prototype.init = function () {
 
 		var self = this;
+
+		// normalize viewport
+		this.normalize();
+
 		// define the data references
 		if (this.base) {
 
@@ -49,21 +95,26 @@ var BalsaApp = (function () {
 
 		}
 
-		var btn = this.viewport.querySelectorAll('#refresh')[0];
-		var state = this.viewport.querySelectorAll('.User-state')[0];
+		var login = this.viewport.querySelectorAll('.Button--login')[0];
+		var logout = this.viewport.querySelectorAll('.Button--logout')[0];
+		var status = this.viewport.querySelectorAll('.AuthMessage-status')[1];
 
-		btn.addEventListener('click', function () {
+		login.addEventListener('click', function () {
 
 			if (self.base.auth().currentUser == null) {
 
-				state.textContent = "Fazendo login...";
-				setTimeout(self.auth.login, 1000);
+				// status.innerText = "Fazendo login...";
+				// setTimeout(self.auth.login(), 1000);
+				self.auth.login();
 
-			} else {
+			}
 
-				state.textContent = "Offline";
+		});
+
+		logout.addEventListener('click', function () {
+
+			if (self.base.auth().currentUser !== null) {
 				self.auth.logout();
-
 			}
 
 		});
@@ -236,6 +287,72 @@ var Auth = (function () {
 	};
 
 	return Auth;
+
+})();
+
+/* Current */
+
+var Current = (function () {
+
+	/**
+	 * Current constructor
+	 * @constructor
+	 */
+	function Current() {
+
+		this.status = {};
+
+		this.band = {};
+		this.itca = {};
+
+	}
+
+	return Current;
+
+})();
+
+/* Queue */
+
+var Queue = (function () {
+
+	/**
+	 * Queue constructor
+	 * @constructor
+	 */
+	function Queue() {
+
+		this.count = 0;
+
+		this.user = 0;
+		this.isValid = true;
+		this.direction = {};
+		this.timestamp = 0;
+
+	}
+
+	return Queue;
+
+})();
+
+/* Status */
+
+var Status = (function () {
+
+	/**
+	 * Status constructor
+	 * @constructor
+	 */
+	function Status() {
+
+		this.title = '';
+		this.user = '';
+		this.message = '';
+		this.className = '';
+		this.timestamp = '';
+
+	}
+
+	return Status;
 
 })();
 

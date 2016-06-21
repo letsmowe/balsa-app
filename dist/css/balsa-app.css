@@ -1,0 +1,51 @@
+/*!
+ * Mowe BalsaApp Project v0.0.1 (http://letsmowe.org/)
+ * Copyright 2013-2016 Mowe Developers
+ * Licensed under MIT (https://github.com/letsmowe/balsa-app/blob/master/LICENSE)
+*/
+/* Balsapp */
+
+.Balsapp {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: column;
+  flex-flow: column;
+  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* Balsapp background */
+
+.Balsapp-background {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+/* Balsapp inner */
+
+.Balsapp-inner {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: column;
+  flex-flow: column;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+}
+
+/* Balsapp stage */
+
+.Balsapp-stage {
+  flex: 1;
+  height: 100%;
+}
