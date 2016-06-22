@@ -75,6 +75,14 @@ var BalsaApp = (function () {
 		this.normalize();
 
 		this.auth = new Auth(this.inner.viewport);
+		this.auth.onSignInStateChange = function () {
+			if (self.viewport.classList.contains('is-signed-out')) {
+				self.viewport.classList.remove('is-signed-out');
+				self.viewport.classList.add('is-signed-in');
+			}
+		};
+		this.auth.init();
+
 		this.current = new Current(this.stage.viewport);
 
 		// define the data references
@@ -88,32 +96,6 @@ var BalsaApp = (function () {
 			var countsRef = database.ref('counts');
 
 		}
-
-		var login = this.auth.buttonLogin;
-		var logout = this.auth.buttonLogout;
-		var status = this.auth.user.authMessageStatus.viewport;
-
-		login.addEventListener('click', function () {
-
-			if (self.base.auth().currentUser == null) {
-
-				status.innerText = "Fazendo login...";
-				setTimeout(self.auth.login(), 1000);
-				self.auth.login();
-
-			}
-
-		});
-
-		logout.addEventListener('click', function () {
-
-			if (self.base.auth().currentUser !== null) {
-
-				self.auth.logout();
-
-			}
-
-		});
 
 	};
 
