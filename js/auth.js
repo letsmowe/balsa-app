@@ -11,6 +11,7 @@ var Auth = (function () {
 	function Auth(parent) {
 
 		var self = this;
+		this.onSignInStateChange = false;
 
 		this.config = {
 			authClass: 'Auth',
@@ -23,21 +24,14 @@ var Auth = (function () {
 		};
 
 		this.viewport = parent; // its parent element
-		this.auth = {};
+		this.auth = {}; // the auth element
 		this.background = {};
 		this.inner = {};
-		this.userView = {};
-		this.action = {};
-		this.buttonLogin = {};
-		this.buttonLogout = {};
+		this.userView = {}; // user block (store info and actions about user)
+		this.action = {}; // contains user action buttons
+		this.buttonLogin = {}; // button element (login button)
+		this.buttonLogout = {}; // button element (logout button)
 
-		if (this.viewport) {
-
-			this.init();
-
-		}
-
-		// implying firebase config is already set up
 		this.login = function () {
 
 			if (!firebase.auth().currentUser) {
@@ -45,28 +39,18 @@ var Auth = (function () {
 				var provider = new firebase.auth.FacebookAuthProvider();
 				firebase.auth().signInWithRedirect(provider);
 
-				firebase.auth().getRedirectResult().then(function (result) {
-
-					if (firebase.auth().currentUser == null) {
-						// go to facebook authentication page and set online true
-						localStorage.setItem('online', true);
-					}
-
-				}).catch(function (error) {
-					console.error(error);
-				});
-
 			}
 
 		};
 
 		this.logout = function () {
-			console.log('called logout func');
+			if (firebase.auth().currentUser) {
+				console.log('called logout func');
 
-			// set up interface to signed out user
-			firebase.auth().signOut();
-			self.removeLocalStorage();
-			self.setLoggedOutInfo();
+				// set up interface to signed out user
+				firebase.auth().signOut();
+				self.setLoggedOutDisplay();
+			}
 
 		};
 
@@ -76,19 +60,12 @@ var Auth = (function () {
 			firebase.auth().onAuthStateChanged(function(authUser) {
 
 				if (authUser) {
-					console.log('authUser true @ onAuthStateChange');
-
+					console.log('authUser true @ onAuthStateChangeDisplay');
 					self.user.setUserData(authUser);
 					self.user.setSignInStatus(true);
-					self.setLocalStorage();
 					self.user.save();
-
-					if (self.user.getUserData().uid == self.getLocalStorage().user.uid) {
-						self.setLoggedInInfo();
-						console.log(self.user.getUserData().uid);
-					} else {
-						console.log('First time user logged in');
-					}
+					self.setLoggedInDisplay();
+					self.onSignInStateChange();
 
 				} else {
 					console.log('authUser false @ onAuthStateChange');
@@ -96,15 +73,11 @@ var Auth = (function () {
 					self.user.setSignInStatus(false);
 
 					// for firebase, user is off, but for localstorage, he is on
-					if (localStorage.getItem('auth') && localStorage.getItem('online')) {
-						self.setLoggedInInfo();
-					}
+					// if (localStorage.getItem('auth') && localStorage.getItem('online')) {
+					// 	self.setLoggedInInfo();
+					// }
 				}
 			});
-
-			// if (localStorage.getItem('online')) {
-			// 	self.displayInfo();
-			// }
 
 		};
 
@@ -112,8 +85,24 @@ var Auth = (function () {
 
 	Auth.prototype.init = function () {
 
+		var self = this;
+
+		
 		this.normalize();
 		this.user = new User(this.userView.viewport);
+
+		this.buttonLogin.addEventListener('click', function () {
+
+			self.user.authMessageStatusOut.viewport.innerText = "Fazendo login...";
+			setTimeout(self.login, 1000);
+
+		});
+
+		this.buttonLogout.addEventListener('click', function () {
+
+			self.logout();
+
+		});
 
 	};
 
@@ -123,6 +112,7 @@ var Auth = (function () {
 		this.auth.viewport = document.createElement('div');
 		this.auth.viewport.className = this.config.authClass;
 
+		// append auth element to its viewport ( parent element = Balsapp-inner )
 		this.viewport.appendChild(this.auth.viewport);
 
 		// create auth background element
@@ -133,6 +123,7 @@ var Auth = (function () {
 		this.inner.viewport = document.createElement('div');
 		this.inner.viewport.className = this.config.innerClass;
 
+		// append both background and inner to auth element
 		this.auth.viewport.appendChild(this.background.viewport);
 		this.auth.viewport.appendChild(this.inner.viewport);
 
@@ -144,99 +135,59 @@ var Auth = (function () {
 		this.action.viewport = document.createElement('div');
 		this.action.viewport.className = this.config.actionClass;
 
+		// append both userview and action element to inner element
 		this.inner.viewport.appendChild(this.userView.viewport);
 		this.inner.viewport.appendChild(this.action.viewport);
 
+		// create button login
 		this.buttonLogin = document.createElement('button');
 		this.buttonLogin.className = 'Button Button--login';
 		this.buttonLogin.innerHTML = '<span>Entrar</span>';
 
+		// create button logout
 		this.buttonLogout = document.createElement('button');
 		this.buttonLogout.className = 'Button Button--logout';
 		this.buttonLogout.innerHTML = '<span>Sair</span>';
 
+		// append both login and logout button to action element
 		this.action.viewport.appendChild(this.buttonLogin);
 		this.action.viewport.appendChild(this.buttonLogout);
 
 	};
 
-	// WARNING: wont work, user is created using setUserData and retrive data using getUserData
 	Auth.prototype.getUser = function () {
 
 		return this.user;
 
 	};
 
-	Auth.prototype.displayInfo = function () {
+	Auth.prototype.getDisplayFields = function () {
 
-		var balsaStatus = document.getElementById('balsapp').classList;
-
-		if (balsaStatus.contains('is-signed-out')) {
-
-			balsaStatus.remove('is-signed-out');
-			balsaStatus.add('is-signed-in');
-
-		}
-
-	};
-
-	Auth.prototype.setLocalStorage = function () {
-
-		var str = JSON.stringify(this);
-		localStorage.setItem('auth', str);
-
-	};
-
-	Auth.prototype.removeLocalStorage = function () {
-
-		localStorage.removeItem('auth');
-		localStorage.removeItem('online');
-
-	};
-
-	Auth.prototype.getLocalStorage = function () {
-
-		var storedData = localStorage.getItem('auth');
-		storedData = JSON.parse(storedData);
-
-		return storedData;
-
-	};
-
-	Auth.prototype.getInfoFields = function () {
-
-		var name = document.getElementsByClassName('User-display-name')[0];
-		var photo = document.getElementsByClassName('UserPhoto')[0];
+		var name = this.user.infoDisplayName;
+		var photo = this.user.photo;
 		
 		return {0: name, 1: photo};
 
 	};
 
-	Auth.prototype.setLoggedInInfo = function () {
+	Auth.prototype.setLoggedInDisplay = function () {
 
-		var info = this.getInfoFields();
-		var storedData;
+		var info = this.getDisplayFields();
+		var userData = this.user.getUserData();
 
-		if (localStorage.length) {
-
-			storedData = this.getLocalStorage();
-
-			info[0].textContent = storedData.user.displayName;
-			var img = document.createElement('img');
-			img.alt = storedData.user.displayName;
-			img.src = storedData.user.photoURL;
-			info[1].innerHTML = "";
-			info[1].appendChild(img);
-
-		}
+		info[0].viewport.innerText = userData.displayName;
+		var img = document.createElement('img');
+		img.alt = userData.displayName;
+		img.src = userData.photoURL;
+		info[1].viewport.appendChild(img);
 
 	};
 
-	Auth.prototype.setLoggedOutInfo = function () {
+	Auth.prototype.setLoggedOutDisplay = function () {
 
-		var fields = this.getInfoFields();
+		var fields = this.getDisplayFields();
 		fields[0].innerHTML = "";
-		fields[1].innerHTML = "";
+		fields[1].viewport.innerHTML = "";
 
 		var balsaStatus = document.getElementById('balsapp').classList;
 		balsaStatus.remove('is-signed-in');
