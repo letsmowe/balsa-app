@@ -30,13 +30,13 @@ var Status = (function () {
 
 	};
 
-	Status.prototype.setStatus = function (title, message, user) {
+	Status.prototype.setStatus = function (title, message, user, timestamp, classname) {
 
 		this.title = title;
 		this.message = message;
 		this.user = user;
-		this.timestamp = Date.now();
-		// this.className = ''; ?
+		this.timestamp = timestamp;
+		this.className = classname;
 
 	};
 

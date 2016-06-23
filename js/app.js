@@ -11,9 +11,11 @@ var BalsaApp = (function () {
 	 */
 	function BalsaApp(viewport, base) {
 
+		// BalsaApp properties
 		this.viewport = viewport;
 		this.base = base;
 
+		// BalsaApp DOM classes
 		this.config = {
 			viewportClass: 'Balsapp',
 			backgroundClass: 'Balsapp-background',
@@ -21,9 +23,11 @@ var BalsaApp = (function () {
 			stageClass: 'Balsapp-stage'
 		};
 
+		// BalsaApp DOM elements
 		this.background = {};
 		this.inner = {};
 		this.stage = {};
+		
 
 		if (this.viewport && this.base) {
 
@@ -84,7 +88,7 @@ var BalsaApp = (function () {
 		this.auth.init();
 
 		this.current = new Current(this.stage.viewport);
-
+		
 		// define the data references
 		if (this.base) {
 

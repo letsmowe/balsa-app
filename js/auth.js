@@ -5,24 +5,28 @@ var Auth = (function () {
 
 	/**
 	 * Balsa App Auth constructor
+	 *  Auth INIT function is called on app.js
 	 * @constructor
 	 * @param {Element} parent parent element viewport (auth parent element = Balsapp-inner)
 	 */
 	function Auth(parent) {
 
+		// Auth properties
 		var self = this;
 		this.onSignInStateChange = false;
 
+		// Auth DOM classes
 		this.config = {
 			authClass: 'Auth',
 			backgroundClass: 'Auth-background',
 			innerClass: 'Auth-inner',
 			userClass: 'AuthUser',
 			actionClass: 'AuthAction',
-			messageInClass: 'AuthMessage AuthMessage--signed-in',
-			messageOutClass: 'AuthMessage AuthMessage--signed-in'
+			btnLoginClass: 'Button Button--login',
+			btnLogoutClass: 'Button Button--logout'
 		};
 
+		// Auth DOM elements
 		this.viewport = parent; // its parent element
 		this.auth = {}; // the auth element
 		this.background = {};
@@ -141,12 +145,12 @@ var Auth = (function () {
 
 		// create button login
 		this.buttonLogin = document.createElement('button');
-		this.buttonLogin.className = 'Button Button--login';
+		this.buttonLogin.className = this.config.btnLoginClass;
 		this.buttonLogin.innerHTML = '<span>Entrar</span>';
 
 		// create button logout
 		this.buttonLogout = document.createElement('button');
-		this.buttonLogout.className = 'Button Button--logout';
+		this.buttonLogout.className = this.config.btnLogoutClass;
 		this.buttonLogout.innerHTML = '<span>Sair</span>';
 
 		// append both login and logout button to action element
