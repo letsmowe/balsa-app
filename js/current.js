@@ -6,14 +6,17 @@ var Current = (function () {
 	/**
 	 * Current constructor
 	 * @param {Element} parent element parent viewport (current parent element = Balsapp-stage)
+	 * @param {Object} refs receive all firebase nodes references
 	 * @constructor
 	 */
-	function Current(parent) {
+	function Current(parent, refs) {
 
 		var self = this;
+		this.refs = refs; // get all firebase references
 
 		// Current properties
-		this.status = new Status();
+		this.status = new Status(this.refs.statusRef);
+		this.queue = new Queue(this.refs.queueRef);
 
 		// Current DOM classes
 		this.config = {
@@ -25,7 +28,6 @@ var Current = (function () {
 			counterBANDClass: 'Current-counter CounterBand Counter-edit',
 			counterITCAClass: 'Current-counter CounterItca Counter-edit',
 			counterSubmitClass: 'CurrentStatus Status-submit'
-
 		};
 		
 		// Current DOM elements
@@ -42,84 +44,123 @@ var Current = (function () {
 		this.counterItcaEdit = {};
 		this.counterItcaSubmit = {};
 
-		this.onStatusChange = function (snap) {
+		/**
+		 * Update display fields with data from current firebase node
+		 *  this is a function for a listener created on current reference (see this.init)
+		 *  define this.status/band/itca with the most recent data (status title, band count, and itca count, respectively)
+		 *  display current data on fields
+		 * @param {Object} snap returned data from current firebase reference
+		 */
+		this.onCurrentChange = function (snap) {
 
-			snap.forEach(function(childSnap) {
-				console.log(childSnap.val().title);
-				self.statusEdit.viewport.value = childSnap.val().title;
+			console.log('status > ' + snap.val().status.title);
+			console.log('band > ' + snap.val().band.count);
+			console.log('itca > ' + snap.val().itca.count);
+			self.statusTitle = snap.val().status.title;
+			self.bandCount = snap.val().band.count;
+			self.itcaCount = snap.val().itca.count;
 
-				return true;
-			});
-
-		};
-
-		this.onCounterChange = function (snap) {
-
-			var bandc = 0;
-			var itcac = 0;
-
-			// now its walking through all result array, but later will only get ref('/current/')
-			snap.forEach(function(childSnap) {
-				if (childSnap.val().direction == 'BAND' && childSnap.val().isValid) {
-					bandc = childSnap.val().count;
-				} else if (childSnap.val().direction == 'ITCA' && childSnap.val().isValid) {
-					itcac = childSnap.val().count;
-				}
-			});
-
-			self.counterBandEdit.viewport.value = bandc;
-			console.log('dir: band # ' + bandc);
-
-			self.counterItcaEdit.viewport.value = itcac;
-			console.log('dir: itca # ' + itcac);
+			self.statusEdit.viewport.value = snap.val().status.title;
+			self.counterBandEdit.viewport.value = snap.val().band.count;
+			self.counterItcaEdit.viewport.value = snap.val().itca.count;
 
 		};
 
+		/**
+		 * Triggered function for submit/update status
+		 *  create an status object with recent values (from fields),
+		 *  check if status title is not equals to the current title (defined on onCurrentChange)
+		 *      if it is not equals to current title, push newStatus to status node and update current node
+		 */
 		this.onStatusSubmitClick = function () {
 
-			var newStatus = {
-				title: self.statusEdit.viewport.value,
-				message: self.statusEdit.viewport.value,
-				user: firebase.auth().currentUser.uid,
-				className: 'Normal',
-				timestamp: Date.now()
-			};
+			var statusTitle = self.statusEdit.viewport.value;
+			self.status.setStatus(statusTitle, statusTitle, self.refs.auth.currentUser.uid, 'normal');
 
-			firebase.database().ref('/status/').push(newStatus);
+			if (self.statusTitle != statusTitle) {
+
+				if (self.status.save()) {
+					self.refs.currentRef.update({'status': self.status.getStatus()});
+				} else {
+					console.log('Não foi possível atualizar o status');
+				}
+
+			} else {
+				console.log('O status é idêntico ao atual');
+			}
+
 		};
 
+		/**
+		 * Triggered function for submit/update band counter
+		 *  create a queue object with recent values (from fields),
+		 *  check if band count is not equals to the current band count (defined on onCurrentChange)
+		 *      if it is not equals to current count, push newQueue to queue reference, but will only update current
+		 *      node if it is a valid counter entry (isValid must equals true)
+		 *      it it is not valid (isValid equals false) show message and call OnCurrentChange once (to update modified
+		 *      fields values.
+		 */
 		this.onCounterBandSubmitClick = function () {
 
-			var newQueue = {
-				count: self.counterBandEdit.viewport.value,
-				direction: 'BAND',
-				user: firebase.auth().currentUser.uid,
-				isValid: true,
-				timestamp: Date.now()
-			};
+			var bandCount = self.counterBandEdit.viewport.value;
+			self.queue.setQueue(bandCount, 'BAND', self.refs.auth.currentUser.uid);
 
-			firebase.database().ref('/queue/').push(newQueue);
+			if(self.bandCount != bandCount) {
+
+				// this comparation push newQueue even if isValid equals false, but only
+				// updates current if isValid equals true and newQueue is pushed into queue
+				if (self.queue.getQueue().isValid && self.queue.save()) {
+					self.refs.currentRef.update({'band': self.queue.getQueue()});
+				} else {
+					console.log('Entrada inválida, o valor não será atualizado');
+					self.refs.currentRef.once('value').then(self.onCurrentChange);
+				}
+
+			} else {
+				console.log('Número do contador para BAND é idêntico ao atual');
+			}
 
 		};
 
+		/**
+		 * Triggered function for submit/update itca counter
+		 *  create a queue object with recent values (from fields),
+		 *  check if itca count is not equals to the current itca count (defined on onCurrentChange)
+		 *      if it is not equals to current count, push newQueue to queue reference, but will only update current
+		 *      node if it is a valid counter entry (isValid must equals true)
+		 *      it it is not valid (isValid equals false) show message and call OnCurrentChange once (to update modified
+		 *      fields values.
+		 */
 		this.onCounterItcaSubmitClick = function () {
 
-			var newQueue = {
-				count: self.counterItcaEdit.viewport.value,
-				direction: 'ITCA',
-				user: firebase.auth().currentUser.uid,
-				isValid: true,
-				timestamp: Date.now()
-			};
+			var itcaCount = self.counterItcaEdit.viewport.value;
+			self.queue.setQueue(itcaCount, 'ITCA', self.refs.auth.currentUser.uid);
 
-			firebase.database().ref('/queue/').push(newQueue);
+			if(self.itcaCount != itcaCount) {
+
+				if (self.queue.getQueue().isValid && self.queue.save()) {
+					self.refs.currentRef.update({'itca': self.queue.getQueue()});
+				} else {
+					console.log('Entrada inválida, o valor não será atualizado');
+					self.refs.currentRef.once('value').then(self.onCurrentChange);
+				}
+
+			} else {
+				console.log('Número do contador para ITCA é idêntico ao atual');
+			}
 		};
 		
-		if (this.viewport)
+		if (this.viewport) {
+
 			this.init();
+
+		}
 
 	}
 
+	/**
+	 * Create all listeners for submit buttons
+	 */
 	Current.prototype.addListeners = function () {
 
 		this.statusSubmit.addEventListener('click', this.onStatusSubmitClick, false);
@@ -130,7 +171,7 @@ var Current = (function () {
 
 	/**
 	 * Normalize Current DOM elements
-	 *  create current elements blocks and placeholders
+	 *  create current elements blocks and placeholders, and call addListeners to set listener on created blocks
 	 */
 	Current.prototype.normalize = function () {
 
@@ -158,10 +199,12 @@ var Current = (function () {
 		this.statusSubmit.innerText = 'Atualizar';
 		this.statusSubmit.className = this.config.submitClass;
 
+		// append status view and display inside blocks
 		this.statusView.viewport.appendChild(this.statusDisplay.viewport);
 		this.statusDisplay.viewport.appendChild(this.statusEdit.viewport);
 		this.statusDisplay.viewport.appendChild(this.statusSubmit);
 
+		// create element blocks for destination BAND counter/queue
 		this.counterBandDisplay.viewport = document.createElement('div');
 		this.counterBandDisplay.viewport.innerHTML = 'Fila ITCA > BAND';
 		this.counterBandDisplay.viewport.className = this.config.displayClass;
@@ -171,6 +214,7 @@ var Current = (function () {
 		this.counterBandSubmit.innerText = 'Atualizar';
 		this.counterBandSubmit.className = this.config.counterSubmitClass;
 
+		// create element blocks for destination ITCA counter/queue
 		this.counterItcaDisplay.viewport = document.createElement('div');
 		this.counterItcaDisplay.viewport.innerHTML = 'Fila BAND > ITCA';
 		this.counterItcaDisplay.viewport.className = this.config.displayClass;
@@ -180,102 +224,18 @@ var Current = (function () {
 		this.counterItcaSubmit.innerText = 'Atualizar';
 		this.counterItcaSubmit.className = this.config.counterSubmitClass;
 
-
+		// append dest. BAND to its display block
 		this.statusView.viewport.appendChild(this.counterBandDisplay.viewport);
 		this.counterBandDisplay.viewport.appendChild(this.counterBandEdit.viewport);
 		this.counterBandDisplay.viewport.appendChild(this.counterBandSubmit);
 
+		// append dest. ITCA to its display block
 		this.statusView.viewport.appendChild(this.counterItcaDisplay.viewport);
 		this.counterItcaDisplay.viewport.appendChild(this.counterItcaEdit.viewport);
 		this.counterItcaDisplay.viewport.appendChild(this.counterItcaSubmit);
 
-
 		this.addListeners();
 
-	};
-
-	/**
-	 *
-	 */
-	Current.prototype.displayCurrent = function () {
-
-		var currentData = this.getCurrent();
-
-		this.statusDisplay.viewport = currentData.status.title;
-		// counters skipped
-
-	};
-
-	/**
-	 * Get current counters and app status
-	 * @returns {Current}
-	 */
-	Current.prototype.getCurrent = function () {
-
-		return this;
-
-	};
-
-	/**
-	 * Set current counter and app status on Current class
-	 * @param {Object} statusRef
-	 * @param {Object} queueRef
-	 */
-	Current.prototype.setCurrent = function () {
-		
-		// this.status = this.retrieveStatus();
-		// this.band = this.retrieveDirection(queueRef, 'BAND > ITCA');
-		// this.itca = this.retrieveDirection(queueRef, 'ITCA > BAND');
-
-	};
-
-	/**
-	 * Pull data from firebase and create queue object for 'BAND > ITCA' or 'ITCA > BAND'
-	 * @param queueRef firebase queue reference
-	 * @param {object} direc direction array
-	 * @returns {Queue}
-	 */
-	Current.prototype.retrieveDirection = function (queueRef, direc) {
-
-		var queue = new Queue();
-		var queryRef = queueRef.child(direc).orderByKey().limitToLast(1);
-
-		queryRef.once('value').then(function(snapshot) {
-			
-			var result = snapshot.val();
-			
-			if (result.isValid)
-				queue.setQueue(result.count, result.direction, result.timestamp, result.user);
-			else 
-				queue = {};
-			
-		});
-
-		return queue;
-
-	};
-	
-	Current.prototype.retrieveStatus = function () {
-
-		var self = this;
-
-		firebase.database().ref('/status/').limitToLast(1).once('value').then(function (snapshot) {
-
-			var last = snapshot.key;
-
-			if (last) {
-
-				console.log(snapshot[last]);
-				console.log(snapshot);
-
-			} else {
-				self.status = {};
-			}
-
-		});
-
-		return status;
-		
 	};
 
 	/**
@@ -284,13 +244,41 @@ var Current = (function () {
 	Current.prototype.init = function () {
 
 		this.normalize();
+		this.refs.currentRef.on('value', this.onCurrentChange);
 
-		firebase.database().ref('/status/').limitToLast(1).on('value', this.onStatusChange);
-		firebase.database().ref('/queue/').orderByKey().on('value', this.onCounterChange);
+		/*
+		// Testing order for most recent first
+		// May not be useful now, but later will help on update current values when queue set isValid equals false
+		// isValid turns false when an user is set into douchebag
+		var bandv = false;
+		var itcav = false;
+		firebase.database().ref('/queue/').orderByChild('timestamp').on('child_added', function(snap) {
 
-		this.setCurrent();
+			if (snap.val().direction == 'BAND' && snap.val().isValid && !bandv) {
 
-		this.displayCurrent();
+				bandv = true;
+				self.counterBandEdit.viewport.value = snap.val().count;
+				firebase.database().ref('/current/').update({'band': snap.val()});
+
+			} else if ((snap.val().direction == 'ITCA' && snap.val().isValid) && !itcav) {
+
+				itcav = true;
+				self.counterItcaEdit.viewport.value = snap.val().count;
+				firebase.database().ref('/current/').update({'itca': snap.val()});
+
+			}
+
+		});
+
+		// testing descending order result query
+		for (var i = 1; i <= 5; i++)
+		 firebase.database().ref('/test/').push({'timestamp': 0 - Date.now(), 'val': i});
+
+		firebase.database().ref('/test/').orderByChild('timestamp').on('child_added', function(snap){
+		 console.log('decresc' + snap.val().val);
+		});
+
+		*/
 
 	};
 

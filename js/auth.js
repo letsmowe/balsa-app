@@ -6,14 +6,16 @@ var Auth = (function () {
 	/**
 	 * Balsa App Auth constructor
 	 *  Auth INIT function is called on app.js
-	 * @constructor
 	 * @param {Element} parent parent element viewport (auth parent element = Balsapp-inner)
+	 * @param {Object} refs receive all references from firebase
+	 * @constructor
 	 */
-	function Auth(parent) {
+	function Auth(parent, refs) {
 
 		// Auth properties
 		var self = this;
 		this.onSignInStateChange = false;
+		this.refs = refs; // get all firebase references
 
 		// Auth DOM classes
 		this.config = {
@@ -38,7 +40,7 @@ var Auth = (function () {
 
 		this.login = function () {
 
-			if (!firebase.auth().currentUser) {
+			if (!self.refs.auth.currentUser) {
 
 				var provider = new firebase.auth.FacebookAuthProvider();
 				firebase.auth().signInWithRedirect(provider);
@@ -48,7 +50,7 @@ var Auth = (function () {
 		};
 
 		this.logout = function () {
-			if (firebase.auth().currentUser) {
+			if (self.refs.auth.currentUser) {
 				console.log('called logout func');
 
 				// set up interface to signed out user
@@ -86,29 +88,6 @@ var Auth = (function () {
 		};
 
 	}
-
-	Auth.prototype.init = function () {
-
-		var self = this;
-
-		
-		this.normalize();
-		this.user = new User(this.userView.viewport);
-
-		this.buttonLogin.addEventListener('click', function () {
-
-			self.user.authMessageStatusOut.viewport.innerText = "Fazendo login...";
-			setTimeout(self.login, 1000);
-
-		});
-
-		this.buttonLogout.addEventListener('click', function () {
-
-			self.logout();
-
-		});
-
-	};
 
 	Auth.prototype.normalize = function () {
 
@@ -196,6 +175,28 @@ var Auth = (function () {
 		var balsaStatus = document.getElementById('balsapp').classList;
 		balsaStatus.remove('is-signed-in');
 		balsaStatus.add('is-signed-out');
+
+	};
+
+	Auth.prototype.init = function () {
+
+		var self = this;
+
+		this.normalize();
+		this.user = new User(this.userView.viewport, this.refs.usersRef);
+
+		this.buttonLogin.addEventListener('click', function () {
+
+			self.user.authMessageStatusOut.viewport.innerText = "Fazendo login...";
+			setTimeout(self.login, 1000);
+
+		});
+
+		this.buttonLogout.addEventListener('click', function () {
+
+			self.logout();
+
+		});
 
 	};
 

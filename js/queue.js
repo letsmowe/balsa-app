@@ -5,51 +5,71 @@ var Queue = (function () {
 
 	/**
 	 * Queue constructor
+	 * @param {Reference} ref queue firebase reference
 	 * @constructor
 	 */
-	function Queue() {
+	function Queue(ref) {
 
 		this.count = 0;
-
-		this.user = 0;
+		this.user = '';
+		this.direction = '';
 		this.isValid = true;
-		this.direction = {};
 		this.timestamp = 0;
+		this.ref = ref;
 
 	}
 
 	/**
 	 * Queue firebase save function
-	 * @param queueRef firebase ref
 	 */
-	Queue.prototype.save = function (queueRef) {
+	Queue.prototype.save = function () {
 
-		if (queueRef && this.direction) {
+		if (this.ref) {
 
-			queueRef.push({
+			if(this.ref.push({
 				count: this.count,
 				direction: this.direction,
 				isValid: this.isValid,
 				timestamp: this.timestamp,
 				user: this.user
-			});
+			}))
+				return true;
 
 		}
+
+		return false;
 
 	};
 
 	/**
 	 * Set data queue object
 	 * @param {int} count number of vehicles on the queue
-	 * @param {object} direction object with key equals 'from' and value equals 'to' (BAND:ITCA or ITCA:BAND)
-	 * @param {string} user who inserted count value
+	 * @param {string} direction means 'final destination', while it's just band > itca and itca > band
+	 * @param {string} user id that updated count value
 	 */
 	Queue.prototype.setQueue = function (count, direction, user) {
 
 		this.count = count;
 		this.direction = direction;
-		this.timestamp = Date.now(); //timestamp = new Date().toString()
 		this.user = user;
+		this.timestamp = 0 - Date.now();
+		//isValid always equals true
+
+	};
+
+	/**
+	 * Return queue info
+	 * @returns {{count: *, user: *, direction: *, isValid: *, timestamp: *}}
+	 */
+	Queue.prototype.getQueue = function () {
+
+		return {
+			'count': this.count,
+			'user': this.user,
+			'direction': this.direction,
+			'isValid': this.isValid,
+			'timestamp': this.timestamp
+		};
 
 	};
 
