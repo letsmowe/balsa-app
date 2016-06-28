@@ -1,0 +1,91 @@
+
+/* State */
+
+.State {
+	color: #ffffff;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	height: 100%;
+	position: relative;
+	width: 100%;
+}
+
+/* State span */
+
+.State span {
+	width: 100%;
+	text-align: center;
+}
+
+/* State background */
+
+.State-background {
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+
+.State--close .State-background,
+.State .is-closed .State-background {
+	background-color: #ff9800;
+}
+
+.State--maintenance .State-background,
+.State .is-fixing .State-background {
+	background-color: #f44336;
+}
+
+.State--open .State-background,
+.State .is-opened .State-background {
+	background-color: #4caf50;
+}
+
+/* State inner */
+
+.State-inner {
+	-webkit-align-items: center;
+	align-items: center;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-flow: column;
+	flex-flow: column;
+	-webkit-justify-content: center;
+	justify-content: center;
+	position: relative;
+	width: 100%;
+}
+
+/* State message and title */
+
+.State-message,
+.State-title {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	width: 100%;
+}
+
+/* State message span */
+
+.State-message span {
+	font-size: .75em;
+	text-transform: lowercase;
+}
+
+/* State title span */
+
+.State-title span {
+	font-size: 1.5em;
+	font-weight: 700;
+	text-transform: uppercase;
+}

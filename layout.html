@@ -6,6 +6,7 @@
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
 <script src="dist/js/villa.min.js"></script>
 <link rel="stylesheet" href="dist/css/villa.min.css"/>
+<link rel="stylesheet" href="dist/css/balsa-app.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" type="text/css" href="dist/css/material-colors.css"/>
 <link rel="stylesheet" type="text/css" href="dist/css/villa-cross.min.css"/>
@@ -14,258 +15,62 @@
 <script src="dist/js/classList.min.js"></script>
 <![endif]-->
 
-<style>
-
-	/* BalsaState */
-
-	.BalsaState {
-		flex: 1;
-		height: 100%;
-		max-height: 4.5em;
-	}
-
-	/* Auth */
-
-	.Auth {
-		color: #424242;
-		flex: 1;
-		height: 100%;
-		max-height: 4.5em;
-		position: relative;
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-	}
-
-	.Auth-background {
-		position: absolute;
-		height: 100%;
-		width: 100%;
-	}
-
-	.Auth-inner {
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-		height: 100%;
-		-webkit-justify-content: space-between;
-		justify-content: space-between;
-		padding: 0 1em;
-		position: relative;
-	}
-
-	.AuthMessage {
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-		-webkit-flex-flow: column;
-		flex-flow: column;
-		line-height: 1.1;
-	}
-
-	.AuthMessage--signed-in,
-	.AuthMessage--signed-out {
-		display: none;
-	}
-
-	.Balsapp.is-signed-in .AuthMessage--signed-in,
-	.Balsapp.is-signed-out .AuthMessage--signed-out {
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-	}
-
-	.AuthMessage span {
-		font-size: .75em;
-	}
-
-	.AuthMessage-required {
-		font-size: .875em;
-	}
-
-	.AuthAction {
-		-webkit-align-items: center;
-		align-items: center;
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-		-webkit-justify-content: center;
-		justify-content: center;
-		height: 100%;
-	}
-
-	.AuthUser {
-		display: block;
-		height: 100%;
-		padding-right: .75em;
-	}
-
-	/* User */
-
-	.User {
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-		height: 100%;
-		width: 100%;
-	}
-
-	.User-info {
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-		-webkit-flex-flow: column;
-		flex-flow: column;
-		-webkit-justify-content: center;
-		justify-content: center;
-	}
-
-	.UserPhoto {
-		-webkit-align-items: center;
-		align-items: center;
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-		-webkit-justify-content: center;
-		justify-content: center;
-		margin-right: .75em;
-	}
-
-	.UserPhoto img {
-		border-radius: 50%;
-		background-color: #eeeeee;
-		display: block;
-		height: 3em;
-		width: 3em;
-	}
-
-	.UserMessage {
-		display: none;
-		-webkit-flex-flow: column;
-		flex-flow: column;
-		line-height: 1.2;
-	}
-
-	.Balsapp.is-signed-in .UserMessage {
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-	}
-
-	.Balsapp.is-signed-in .Button.Button--login {
-		display: none;
-	}
-
-	.Balsapp.is-signed-out .Button.Button--logout {
-		display: none;
-	}
-
-	.User-display-name {
-		font-size: .875em;
-		font-weight: 900;
-	}
-	
-	/* Button */
-	
-	.Button {
-		background-color: #2979ff;
-		border-radius: 2px;
-		border: none;
-		-webkit-box-shadow 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
-		-moz-box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
-		box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
-		color: #ffffff;
-		cursor: pointer;
-		font-size: 16px;
-		height: 2.25em;
-		padding: 0 1em;
-		text-transform: uppercase;
-		-webkit-transition: all .3s;
-		-moz-transition: all .3s;
-		-ms-transition: all .3s;
-		-o-transition: all .3s;
-		transition: all .3s;
-		font-weight: 600;
-	}
-
-	.Button:hover,
-	.Button:active,
-	.Button:focus {
-		-webkit-box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.1);
-		-moz-box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
-		box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
-	}
-
-	.Button:hover {
-		background-color: #757575;
-	}
-
-	.Button:active,
-	.Button:focus {
-		background-color: #616161;
-	}
-
-	.Button--login {
-		background-color: #2196f3;
-	}
-
-	.Button--login:hover {
-		background-color: #42a5f5;
-	}
-
-	.Button--login:active,
-	.Button--login:focus {
-		background-color: #1976d2;
-	}
-
-	.Button--logout {
-		background-color: #f44336;
-	}
-
-	.Button--logout:hover {
-		background-color: #ef5350;
-	}
-
-	.Button--logout:active,
-	.Button--logout:focus {
-		background-color: #d32f2f;
-	}
-
-	.Button span {
-		line-height: 1;
-		font-size: .875em;
-	}
-
-</style>
-
 <body>
+
+<!--
+
+STATE_CLOSE
+	title: Fora de Operação
+	message: Funcionamento das 6h até as 19h
+	class: State--close, is-closed
+
+STATE_OPEN
+	title: Balsa em Operação
+	message: Funcionamento das 6h até as 19h
+	class: State--open, is-opened
+
+maintenance
+
+STATE_OPEN
+	title: Balsa em Manutenção
+	message: Funcionamento das 6h até as 19h
+	class: State--maintenance, is-fixing
+
+-->
 
 <main id="balsapp" class="Balsapp is-signed-in">
 
-	<div class="Balsapp-background blue"></div>
+	<div class="Balsapp-background"></div>
 
 	<div class="Balsapp-inner">
 
-		<div class="State"></div>
+		<div class="Status">
 
-		<div class="Balsapp-stage green">
+			<div class="State State--close">
+
+				<div class="State-background"></div>
+
+				<div class="State-inner">
+
+					<div class="State-title">
+
+						<span>Balsa Fora de Operação</span>
+
+					</div>
+
+					<div class="State-message">
+
+						<span>Funcionamento das 6h até as 19h</span>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="Balsapp-stage">
 
 			<div class="Queue"></div>
 
@@ -286,7 +91,7 @@
 						<figure class="UserPhoto">
 
 							<img src="https://scontent.xx.fbcdn.net/v/t1.0-1/p50x50/11796217_999010553463699_9069271950704979152_n.jpg?oh=430918c9053bd976f2e840d4924dec15&oe=57C63FD6" alt=""/>
-							
+
 						</figure>
 
 						<div class="User-info">
