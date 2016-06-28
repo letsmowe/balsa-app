@@ -31,17 +31,17 @@
 }
 
 .State--close .State-background,
-.State .is-closed .State-background {
+.State.is-closed .State-background {
 	background-color: #ff9800;
 }
 
 .State--maintenance .State-background,
-.State .is-fixing .State-background {
+.State.is-fixing .State-background {
 	background-color: #f44336;
 }
 
 .State--open .State-background,
-.State .is-opened .State-background {
+.State.is-opened .State-background {
 	background-color: #4caf50;
 }
 
