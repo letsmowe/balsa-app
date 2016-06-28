@@ -29,8 +29,6 @@ STATE_OPEN
 	message: Funcionamento das 6h até as 19h
 	class: State--open, is-opened
 
-maintenance
-
 STATE_OPEN
 	title: Balsa em Manutenção
 	message: Funcionamento das 6h até as 19h
@@ -46,7 +44,9 @@ STATE_OPEN
 
 		<div class="Status">
 
-			<div class="State State--close">
+			<!-- Criar uma função chamada normalize, que reseta a classe State e adiciona a classe definada -->
+			<!-- ClassName = 'State' + className; -->
+			<div class="State is-opened">
 
 				<div class="State-background"></div>
 
