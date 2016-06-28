@@ -5,24 +5,30 @@ var Auth = (function () {
 
 	/**
 	 * Balsa App Auth constructor
-	 * @constructor
+	 *  Auth INIT function is called on app.js
 	 * @param {Element} parent parent element viewport (auth parent element = Balsapp-inner)
+	 * @param {Object} refs receive all references from firebase
+	 * @constructor
 	 */
-	function Auth(parent) {
+	function Auth(parent, refs) {
 
+		// Auth properties
 		var self = this;
 		this.onSignInStateChange = false;
+		this.refs = refs; // get all firebase references
 
+		// Auth DOM classes
 		this.config = {
 			authClass: 'Auth',
 			backgroundClass: 'Auth-background',
 			innerClass: 'Auth-inner',
 			userClass: 'AuthUser',
 			actionClass: 'AuthAction',
-			messageInClass: 'AuthMessage AuthMessage--signed-in',
-			messageOutClass: 'AuthMessage AuthMessage--signed-in'
+			btnLoginClass: 'Button Button--login',
+			btnLogoutClass: 'Button Button--logout'
 		};
 
+		// Auth DOM elements
 		this.viewport = parent; // its parent element
 		this.auth = {}; // the auth element
 		this.background = {};
@@ -34,7 +40,7 @@ var Auth = (function () {
 
 		this.login = function () {
 
-			if (!firebase.auth().currentUser) {
+			if (!self.refs.auth.currentUser) {
 
 				var provider = new firebase.auth.FacebookAuthProvider();
 				firebase.auth().signInWithRedirect(provider);
@@ -44,7 +50,7 @@ var Auth = (function () {
 		};
 
 		this.logout = function () {
-			if (firebase.auth().currentUser) {
+			if (self.refs.auth.currentUser) {
 				console.log('called logout func');
 
 				// set up interface to signed out user
@@ -83,29 +89,6 @@ var Auth = (function () {
 
 	}
 
-	Auth.prototype.init = function () {
-
-		var self = this;
-
-		
-		this.normalize();
-		this.user = new User(this.userView.viewport);
-
-		this.buttonLogin.addEventListener('click', function () {
-
-			self.user.authMessageStatusOut.viewport.innerText = "Fazendo login...";
-			setTimeout(self.login, 1000);
-
-		});
-
-		this.buttonLogout.addEventListener('click', function () {
-
-			self.logout();
-
-		});
-
-	};
-
 	Auth.prototype.normalize = function () {
 
 		// create auth element
@@ -141,12 +124,12 @@ var Auth = (function () {
 
 		// create button login
 		this.buttonLogin = document.createElement('button');
-		this.buttonLogin.className = 'Button Button--login';
+		this.buttonLogin.className = this.config.btnLoginClass;
 		this.buttonLogin.innerHTML = '<span>Entrar</span>';
 
 		// create button logout
 		this.buttonLogout = document.createElement('button');
-		this.buttonLogout.className = 'Button Button--logout';
+		this.buttonLogout.className = this.config.btnLogoutClass;
 		this.buttonLogout.innerHTML = '<span>Sair</span>';
 
 		// append both login and logout button to action element
@@ -192,6 +175,28 @@ var Auth = (function () {
 		var balsaStatus = document.getElementById('balsapp').classList;
 		balsaStatus.remove('is-signed-in');
 		balsaStatus.add('is-signed-out');
+
+	};
+
+	Auth.prototype.init = function () {
+
+		var self = this;
+
+		this.normalize();
+		this.user = new User(this.userView.viewport, this.refs.usersRef);
+
+		this.buttonLogin.addEventListener('click', function () {
+
+			self.user.authMessageStatusOut.viewport.innerText = "Fazendo login...";
+			setTimeout(self.login, 1000);
+
+		});
+
+		this.buttonLogout.addEventListener('click', function () {
+
+			self.logout();
+
+		});
 
 	};
 

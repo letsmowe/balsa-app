@@ -11,9 +11,12 @@ var BalsaApp = (function () {
 	 */
 	function BalsaApp(viewport, base) {
 
+		// BalsaApp properties
 		this.viewport = viewport;
 		this.base = base;
+		this.refs = {};
 
+		// BalsaApp DOM classes
 		this.config = {
 			viewportClass: 'Balsapp',
 			backgroundClass: 'Balsapp-background',
@@ -21,9 +24,11 @@ var BalsaApp = (function () {
 			stageClass: 'Balsapp-stage'
 		};
 
+		// BalsaApp DOM elements
 		this.background = {};
 		this.inner = {};
 		this.stage = {};
+		
 
 		if (this.viewport && this.base) {
 
@@ -74,7 +79,23 @@ var BalsaApp = (function () {
 		// normalize viewport
 		this.normalize();
 
-		this.auth = new Auth(this.inner.viewport);
+		// define the data references
+		if (this.base) {
+
+			this.refs = {
+				'database': this.base.database(), //firebase.database()
+				'adminsRef': this.base.database().ref('admins'),
+				'douchebagRef': this.base.database().ref('douchebag'),
+				'currentRef': this.base.database().ref('current'),
+				'queueRef': this.base.database().ref('queue'),
+				'statusRef': this.base.database().ref('status'),
+				'usersRef': this.base.database().ref('users'),
+				'auth': this.base.auth()
+			};
+
+		}
+
+		this.auth = new Auth(this.inner.viewport, this.refs);
 		this.auth.onSignInStateChange = function () {
 			if (self.viewport.classList.contains('is-signed-out')) {
 				self.viewport.classList.remove('is-signed-out');
@@ -83,19 +104,7 @@ var BalsaApp = (function () {
 		};
 		this.auth.init();
 
-		this.current = new Current(this.stage.viewport);
-
-		// define the data references
-		if (this.base) {
-
-			var database = this.base.database(); // firebase.database()
-			var usersRef = database.ref('users');
-			var adminsRef = database.ref('admin');
-			var blacklistRef = database.ref('blacklist');
-			var statusRef = database.ref('status');
-			var countsRef = database.ref('counts');
-
-		}
+		this.current = new Current(this.stage.viewport, this.refs);
 
 	};
 

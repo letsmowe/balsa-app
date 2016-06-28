@@ -6,15 +6,19 @@ var User = (function () {
 	/**
 	 * User management class constructor
 	 * @param {Element} parent parent element viewport (user parent element = AuthUser)
+	 * @param {Object} ref receive user firebase node reference
 	 * @constructor
 	 */
-	function User (parent) {
-
+	function User (parent, ref) {
+		
+		// User properties
 		this.uid = '';
 		this.displayName = '';
 		this.photoURL = '';
 		this.providerData = '';
-
+		this.ref = ref;
+		
+		// User DOM classes
 		this.config = {
 			userClass: 'User',
 			photoClass: 'UserPhoto',
@@ -27,6 +31,7 @@ var User = (function () {
 			messageStatusOutClass: 'AuthMessage-status font-red'
 		};
 		
+		// User DOM blocks
 		this.viewport = parent; //its parent viewport
 		this.user = {};
 		this.photo = {};
@@ -146,9 +151,7 @@ var User = (function () {
 		this.providerData = this.setProviderData(authUser.providerData);
 		this.isSignedIn = false;
 
-		var usersRef = firebase.database().ref('users');
-
-		usersRef.child(this.uid).update({uid: this.uid});
+		this.ref.child(this.uid).update({uid: this.uid});
 
 	};
 
@@ -190,10 +193,8 @@ var User = (function () {
 			providerData: this.providerData
 		};
 
-		var usersRef = firebase.database().ref('users');
-
-		if (usersRef) {
-			usersRef.child(this.uid).update(userData);
+		if (this.ref) {
+			this.ref.child(this.uid).update(userData);
 		}
 	};
 
